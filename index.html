@@ -655,6 +655,7 @@
   .dept-tag.facilities { background: #E6F4F5; color: #127a82; }
   .dept-tag.campus-life { background: #FEF0CD; color: #7A4600; }
   .dept-tag.transportation { background: #F0E6F8; color: #5E0FB4; }
+  .dept-tag.housing { background: #E4F4EC; color: #1F6B42; }
 
   /* ── Empty + Info ── */
   .info-note {
@@ -683,6 +684,7 @@
   .dept-badge.facilities    { background: var(--ucsf-teal); }
   .dept-badge.campus-life   { background: #FF9E0F; }
   .dept-badge.transportation{ background: #7B5CE5; }
+  .dept-badge.housing       { background: #2E7D52; }
 
   /* ── Utility ── */
   .text-muted { color: var(--ucsf-muted); }
@@ -1427,6 +1429,9 @@
       <div class="dept-tab" id="tabTransportation" onclick="switchDept('transportation')">
         🚌 Transportation Services
       </div>
+      <div class="dept-tab" id="tabHousing" onclick="switchDept('housing')">
+        🏠 UCSF Housing
+      </div>
     </div>
 
     <div class="content-grid">
@@ -1641,6 +1646,70 @@
               </div>
             </div>
           </div>
+
+        <!-- Housing -->
+        <div id="deptHousing" style="display:none">
+          <div class="dept-badge housing">🏠 UCSF Housing</div>
+          <div class="info-note" style="background:#E4F4EC; border-left-color:#2E7D52; color:#1A5C3A;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><strong>UCSF Housing:</strong> Submit requests for on-campus housing managed by UCSF. For urgent maintenance issues (no heat, water leak, lock-out), call Housing Services directly: <strong>415-476-4663</strong>.</span>
+          </div>
+          <div class="card mb-16">
+            <div class="card-header">
+              <h2>🏠 Request Housing Services</h2>
+              <span class="text-muted" style="font-size:12px;">Select a category to get started</span>
+            </div>
+            <div class="card-body">
+              <div class="service-grid" style="--dept-color: #2E7D52;">
+                <div class="service-tile" onclick="openForm('housing','apply','📋 Apply / Waitlist','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">📋</div>
+                  <div class="tile-label">Apply / Waitlist</div>
+                  <div class="tile-desc">New applications, waitlist status</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','maintenance','🔧 Maintenance Request','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">🔧</div>
+                  <div class="tile-label">Maintenance Request</div>
+                  <div class="tile-desc">Repairs, appliances, unit issues</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','lease','📄 Lease & Documents','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">📄</div>
+                  <div class="tile-label">Lease & Documents</div>
+                  <div class="tile-desc">Renewals, lease copies, roommate changes</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','billing','💳 Billing & Payments','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">💳</div>
+                  <div class="tile-label">Billing & Payments</div>
+                  <div class="tile-desc">Rent, deposits, payment issues</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','moveinout','🚚 Move-In / Move-Out','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">🚚</div>
+                  <div class="tile-label">Move-In / Move-Out</div>
+                  <div class="tile-desc">Scheduling, keys, inspections</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','transfer','🔄 Unit Transfer','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">🔄</div>
+                  <div class="tile-label">Unit Transfer</div>
+                  <div class="tile-desc">Room changes, accessible unit requests</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','parking','🅿️ Parking (Housing)','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">🅿️</div>
+                  <div class="tile-label">Parking (Housing)</div>
+                  <div class="tile-desc">Assigned parking, visitor access</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','amenities','🌿 Amenities & Common Areas','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">🌿</div>
+                  <div class="tile-label">Amenities & Common Areas</div>
+                  <div class="tile-desc">Laundry, gym, shared spaces</div>
+                </div>
+                <div class="service-tile" onclick="openForm('housing','general','❓ General Inquiry','UCSF Housing')">
+                  <div class="tile-icon" style="background:#E4F4EC">❓</div>
+                  <div class="tile-label">General Inquiry</div>
+                  <div class="tile-desc">Not listed above</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         </div>
       </div>
@@ -2276,19 +2345,32 @@ const serviceTypes = {
     violation:    ['Citation Appeal','Citation Info Request','Payment Question','Tow / Impound Inquiry'],
     access:       ['Paratransit Request','ADA Accommodation','Accessible Parking','Accessibility Issue Report'],
     general:      ['General Transportation Inquiry','Not Listed Above']
+  },
+  housing: {
+    apply:        ['New Application','Waitlist Status Inquiry','Eligibility Question','Application Update / Withdrawal'],
+    maintenance:  ['Plumbing Issue','Appliance Malfunction','HVAC / Temperature','Electrical Issue','Door / Lock Issue','Pest Concern','Other Repair'],
+    lease:        ['Lease Renewal','Lease Copy Request','Roommate Addition / Removal','Pet Policy Inquiry','Lease Violation Concern'],
+    billing:      ['Rent Payment Issue','Deposit Question','Billing Discrepancy','Autopay Setup','Move-Out Charges'],
+    moveinout:    ['Move-In Scheduling','Key / Access Pickup','Move-Out Inspection','Forwarding Address Update','Storage Inquiry'],
+    transfer:     ['Unit Transfer Request','Roommate Change','Accessible Unit Request','Building Transfer'],
+    parking:      ['Parking Assignment','Visitor Parking Pass','Parking Dispute','Additional Parking Request'],
+    amenities:    ['Laundry Room Issue','Gym / Fitness Access','Package / Mail Issue','Noise Complaint','Common Area Concern'],
+    general:      ['General Housing Inquiry','Not Listed Above']
   }
 };
 
 const formIcons = {
   facilities: { access:'🔐', custodial:'🧹', electrical:'⚡', hvac:'🌡️', plumbing:'🚿', elevators:'🛗', structural:'🏢', pest:'🐛', general:'❓' },
   'campus-life': { events:'🎪', food:'🍽️', wellness:'💪', childcare:'👶', sustainability:'♻️', housing:'🏠', arts:'🎨', employee:'🤝', general:'❓' },
-  transportation: { parking:'🅿️', shuttle:'🚍', fleet:'🚐', bike:'🚲', rideshare:'🚗', ev:'⚡', violation:'📋', access:'♿', general:'❓' }
+  transportation: { parking:'🅿️', shuttle:'🚍', fleet:'🚐', bike:'🚲', rideshare:'🚗', ev:'⚡', violation:'📋', access:'♿', general:'❓' },
+  housing: { apply:'📋', maintenance:'🔧', lease:'📄', billing:'💳', moveinout:'🚚', transfer:'🔄', parking:'🅿️', amenities:'🌿', general:'❓' }
 };
 
 const deptColors = {
   facilities: '#052049',
   'campus-life': '#7A4600',
-  transportation: '#3D1280'
+  transportation: '#3D1280',
+  housing: '#1A5C3A'
 };
 
 let currentDept = 'facilities';
@@ -2296,11 +2378,11 @@ let caseCounter = 4998;
 
 function switchDept(dept) {
   currentDept = dept;
-  ['facilities','campus-life','transportation'].forEach(d => {
+  ['facilities','campus-life','transportation','housing'].forEach(d => {
     document.getElementById('dept' + d.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('')).style.display = (d === dept) ? 'block' : 'none';
   });
   document.querySelectorAll('.dept-tab').forEach(t => t.classList.remove('active'));
-  const tabMap = { facilities:'tabFacilities', 'campus-life':'tabCampusLife', transportation:'tabTransportation' };
+  const tabMap = { facilities:'tabFacilities', 'campus-life':'tabCampusLife', transportation:'tabTransportation', housing:'tabHousing' };
   document.getElementById(tabMap[dept]).classList.add('active');
   if (dept === 'transportation') initKB();
 }
