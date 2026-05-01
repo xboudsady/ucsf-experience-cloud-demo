@@ -1,0 +1,83 @@
+{
+  "note": "Transportation Knowledge Base — source data for KB widget and AI chat context. Article 'a' fields may contain HTML for rich rendering in the portal. Strip HTML when using as AI context.",
+  "version": "1.0",
+  "source": "UCSF Transportation Chatbot KB PDFs (May 2026)",
+  "categories": [
+    {
+      "cat": "Parking",
+      "articles": [
+        { "q": "Where can I park at Parnassus?", "action": null },
+        { "q": "Where can employees park at Parnassus?", "action": { "label": "Request a Parking Permit", "form": "parking" } },
+        { "q": "What are the employee daily parking rates?", "action": null },
+        { "q": "What are the public (visitor/patient) daily parking rates?", "action": null },
+        { "q": "Where can staff park at Mission Bay?", "action": { "label": "Request a Parking Permit", "form": "parking" } },
+        { "q": "Is my Mission Bay permit valid at Parnassus?", "action": { "label": "Request a Parnassus Permit", "form": "parking" } },
+        { "q": "How do I appeal a parking citation?", "action": { "label": "Submit a Citation Appeal", "form": "violation" } },
+        { "q": "Can I get a refund for unused parking days?", "action": { "label": "Contact Transportation Services", "form": "general" } },
+        { "q": "How do I request an ADA parking permit?", "action": { "label": "Request Accessible Parking", "form": "access" } },
+        { "q": "Why is Parnassus parking so difficult?", "action": null },
+        { "q": "Is there a Park and Ride program?", "action": null },
+        { "q": "What happens to parking during Warriors games?", "action": null }
+      ]
+    },
+    {
+      "cat": "Shuttles",
+      "articles": [
+        { "q": "What time does the shuttle run?", "action": null },
+        { "q": "Do shuttles run on weekends?", "action": null },
+        { "q": "Are UCSF shuttles ADA accessible?", "action": { "label": "Request ADA Transportation Assistance", "form": "access" } },
+        { "q": "Are shuttles tracked in real-time?", "action": null },
+        { "q": "Can I bring a bike on the shuttle?", "action": null },
+        { "q": "How do I report a shuttle issue?", "action": { "label": "Report a Shuttle Issue", "form": "shuttle" } },
+        { "q": "Can patients ride UCSF shuttles?", "action": null },
+        { "q": "Where is lost and found for shuttles?", "action": null }
+      ]
+    },
+    {
+      "cat": "Commuter Benefits",
+      "articles": [
+        { "q": "Does UCSF offer pre-tax commuter benefits?", "action": null },
+        { "q": "What can I spend Edenred commuter benefits on?", "action": null },
+        { "q": "What are the monthly Edenred contribution limits?", "action": null },
+        { "q": "When will my Edenred funds be available?", "action": null },
+        { "q": "Does UCSF support vanpools?", "action": { "label": "Ask About Vanpool Options", "form": "rideshare" } },
+        { "q": "What is the UCSF Uber Shuttle?", "action": null },
+        { "q": "How do I set up my Edenred account?", "action": { "label": "Contact Transportation Services", "form": "rideshare" } },
+        { "q": "What happens to my Edenred funds if I leave UCSF?", "action": null }
+      ]
+    },
+    {
+      "cat": "Bikes & Programs",
+      "articles": [
+        { "q": "Does UCSF provide secure bike storage?", "action": { "label": "Request Bike Program Access", "form": "bike" } },
+        { "q": "Is there a Park and Ride program?", "action": null },
+        { "q": "How are transportation changes communicated?", "action": null },
+        { "q": "Does UCSF support carpools?", "action": { "label": "Ask About Carpool Options", "form": "rideshare" } },
+        { "q": "How do I contact Transportation Services?", "action": { "label": "Submit a General Transportation Inquiry", "form": "general" } }
+      ]
+    }
+  ],
+  "key_facts": {
+    "employee_daily_rate": "$26/day",
+    "monthly_permit": "$332/month",
+    "ada_rate": "$7/day",
+    "edenred_transit_limit_2026": "$340/month",
+    "edenred_parking_limit_2026": "$340/month",
+    "edenred_fee": "$3/month when active",
+    "citation_appeal_window": "21 days from issue date",
+    "citation_portal": "PayMyCite.com",
+    "shuttle_dispatch_phone": "(415) 476-GOGO",
+    "transportation_email": "transportation@ucsf.edu",
+    "business_hours": "Monday-Friday, 8 AM - 5 PM",
+    "shuttle_hours": "Approx 5-6 AM through 8 PM, Mon-Fri",
+    "ev_spaces": "100+ across all campuses",
+    "vanpool_min_riders": 4,
+    "vanpool_avg_cost": "$155/person/month",
+    "vanpool_ucsf_subsidy": "25% per vanpool",
+    "vanpool_mtc_subsidy": "$600",
+    "park_and_ride_locations": ["Japan Center", "Music Concourse", "5th and Mission", "UCSF Buchanan Dental"],
+    "employee_permit_valid_locations": ["Mission Bay", "Mt. Zion", "MCB", "Buchanan Dental", "2001 Embarcadero"],
+    "parnassus_permit_requires": "Departmental approval from CAO or Dean's Office",
+    "parnassus_locations": ["ACC Garage", "Westside Dental Lot"]
+  }
+}

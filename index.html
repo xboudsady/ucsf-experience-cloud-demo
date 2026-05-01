@@ -1,0 +1,3172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCSF Campus Services Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* ── UCSF Brand Tokens ── */
+  :root {
+    --ucsf-navy:      #052049;
+    --ucsf-teal:      #18A3AC;
+    --ucsf-teal-dark: #127a82;
+    --ucsf-gold:      #EDBC42;
+    --ucsf-gold-dark: #c99d2a;
+    --ucsf-light-bg:  #F3F6F9;
+    --ucsf-border:    #D8DEE8;
+    --ucsf-text:      #1A2533;
+    --ucsf-muted:     #5C6878;
+
+    /* SLDS-inspired component vars */
+    --slds-radius:    4px;
+    --slds-shadow:    0 2px 8px rgba(0,0,0,.10);
+    --slds-shadow-lg: 0 4px 20px rgba(0,0,0,.13);
+
+    /* Status */
+    --status-open:      #0070D2;
+    --status-progress:  #FF9E0F;
+    --status-resolved:  #2E844A;
+    --status-closed:    #706E6B;
+    --status-new:       #BA0517;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--ucsf-light-bg);
+    color: var(--ucsf-text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── Global Header ── */
+  .global-header {
+    background: var(--ucsf-navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  .global-header .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+  }
+  .ucsf-wordmark {
+    font-family: 'Source Serif 4', serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #fff;
+  }
+  .ucsf-wordmark span { color: var(--ucsf-gold); }
+  .header-divider {
+    width: 1px; height: 24px;
+    background: rgba(255,255,255,.3);
+    margin: 0 12px;
+  }
+  .portal-title {
+    font-size: 13px;
+    color: rgba(255,255,255,.75);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .header-search {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    gap: 8px;
+    width: 220px;
+  }
+  .header-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 13px;
+    width: 100%;
+  }
+  .header-search input::placeholder { color: rgba(255,255,255,.5); }
+  .header-search svg { opacity: 0.5; }
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .user-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--ucsf-teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .user-name { font-size: 13px; color: rgba(255,255,255,.85); }
+
+  /* ── Announcement Banner ── */
+  .announcement {
+    background: #FFF3CD;
+    border-bottom: 1px solid #EDBC42;
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #6B4900;
+  }
+  .announcement svg { flex-shrink: 0; }
+  .announcement strong { font-weight: 600; }
+
+  /* ── Main Layout ── */
+  .main-container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+  }
+
+  /* ── Greeting Bar ── */
+  .greeting-bar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .greeting-text h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ucsf-navy);
+  }
+  .greeting-text p {
+    font-size: 13px;
+    color: var(--ucsf-muted);
+    margin-top: 2px;
+  }
+  .breadcrumb {
+    font-size: 12px;
+    color: var(--ucsf-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .breadcrumb a {
+    color: var(--ucsf-teal);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  /* ── Department Tabs ── */
+  .dept-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--ucsf-border);
+    margin-bottom: 24px;
+    gap: 0;
+  }
+  .dept-tab {
+    padding: 10px 22px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ucsf-muted);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .dept-tab:hover { color: var(--ucsf-navy); }
+  .dept-tab.active {
+    color: var(--ucsf-navy);
+    border-bottom-color: var(--ucsf-teal);
+  }
+  .dept-tab .tab-icon {
+    width: 18px; height: 18px;
+    border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Two-Column Layout ── */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: #fff;
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    box-shadow: var(--slds-shadow);
+  }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ucsf-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-header h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ucsf-navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-body { padding: 18px; }
+
+  /* ── Service Tiles ── */
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .service-tile {
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    padding: 16px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--dept-color, var(--ucsf-teal));
+    transform: scaleX(0);
+    transition: transform 0.15s ease;
+  }
+  .service-tile:hover {
+    border-color: var(--dept-color, var(--ucsf-teal));
+    box-shadow: var(--slds-shadow);
+    transform: translateY(-2px);
+  }
+  .service-tile:hover::before { transform: scaleX(1); }
+  .tile-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--tile-bg, #E6F4F5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-size: 22px;
+  }
+  .tile-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ucsf-navy);
+    line-height: 1.3;
+  }
+  .tile-desc {
+    font-size: 11px;
+    color: var(--ucsf-muted);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+
+  /* ── My Requests (sidebar) ── */
+  .request-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ucsf-border);
+    cursor: pointer;
+  }
+  .request-item:last-child { border-bottom: none; }
+  .request-item:hover { background: #F8FAFC; margin: 0 -18px; padding: 12px 18px; }
+  .request-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+  .request-case { font-size: 12px; font-weight: 700; color: var(--ucsf-teal); }
+  .request-title { font-size: 13px; color: var(--ucsf-text); font-weight: 600; margin: 2px 0; }
+  .request-meta { font-size: 11px; color: var(--ucsf-muted); }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .status-badge.open        { background: #D4E8FD; color: var(--status-open); }
+  .status-badge.in-progress { background: #FEF0CD; color: #7A4600; }
+  .status-badge.resolved    { background: #D4ECD9; color: var(--status-resolved); }
+  .status-badge.new         { background: #FFD6D6; color: var(--status-new); }
+  .status-badge.closed      { background: #E9E9E9; color: var(--status-closed); }
+
+  /* ── View All link ── */
+  .view-all-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--ucsf-teal);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .view-all-link:hover { text-decoration: underline; }
+
+  /* ── Helpful Links ── */
+  .help-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--ucsf-border);
+    cursor: pointer;
+    color: var(--ucsf-text);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .help-link:last-child { border-bottom: none; }
+  .help-link:hover { color: var(--ucsf-teal); }
+  .help-link-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--ucsf-light-bg);
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  /* ── REQUEST FORM VIEW ── */
+  .form-view { display: none; }
+  .form-view.active { display: block; }
+  .home-view { display: block; }
+  .home-view.hidden { display: none; }
+  .requests-view { display: none; }
+  .requests-view.active { display: block; }
+
+  .form-card {
+    background: #fff;
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    box-shadow: var(--slds-shadow);
+    max-width: 780px;
+  }
+  .form-header {
+    background: var(--ucsf-navy);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: var(--slds-radius) var(--slds-radius) 0 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .form-header-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .form-header h2 { font-size: 17px; font-weight: 700; }
+  .form-header p { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 2px; }
+  .form-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--ucsf-border);
+  }
+  .form-section:last-child { border-bottom: none; }
+  .form-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ucsf-muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .form-row {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row:last-child { margin-bottom: 0; }
+  .form-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ucsf-text);
+    margin-bottom: 5px;
+  }
+  .form-field label .required { color: #BA0517; margin-left: 2px; }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    width: 100%;
+    padding: 8px 11px;
+    border: 1px solid #C2CAD4;
+    border-radius: var(--slds-radius);
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--ucsf-text);
+    background: #fff;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    border-color: var(--ucsf-teal);
+    box-shadow: 0 0 0 3px rgba(24,163,172,.15);
+  }
+  .form-field input[readonly] {
+    background: var(--ucsf-light-bg);
+    color: var(--ucsf-muted);
+  }
+  .form-field textarea { resize: vertical; min-height: 90px; }
+  .auto-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    background: #D4ECD9;
+    color: #2E844A;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    font-weight: 600;
+  }
+
+  /* Priority radio */
+  .priority-group {
+    display: flex;
+    gap: 10px;
+  }
+  .priority-option {
+    flex: 1;
+    border: 2px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    padding: 10px 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s;
+  }
+  .priority-option input { display: none; }
+  .priority-option:hover { border-color: #7ecacf; }
+  .priority-option.selected { border-color: var(--ucsf-teal); background: #F0FAFB; }
+  .priority-option .p-label { font-size: 12px; font-weight: 700; display: block; }
+  .priority-option .p-desc { font-size: 11px; color: var(--ucsf-muted); display: block; margin-top: 2px; }
+  .priority-option.p-emergency { border-color: #F66; }
+  .priority-option.p-emergency.selected { background: #FFF0F0; border-color: #BA0517; }
+  .priority-option.p-urgent.selected { background: #FFF8EC; border-color: #FF9E0F; }
+  .priority-option.p-routine.selected { background: #F0FAFB; border-color: var(--ucsf-teal); }
+  .priority-option.p-low.selected { background: #F5F5F5; border-color: #706E6B; }
+
+  /* File upload */
+  .file-drop {
+    border: 2px dashed var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .file-drop:hover { border-color: var(--ucsf-teal); background: #F0FAFB; }
+  .file-drop-icon { font-size: 28px; margin-bottom: 8px; }
+  .file-drop p { font-size: 13px; color: var(--ucsf-muted); }
+  .file-drop strong { color: var(--ucsf-teal); }
+
+  /* Form actions */
+  .form-actions {
+    padding: 16px 24px;
+    background: var(--ucsf-light-bg);
+    border-top: 1px solid var(--ucsf-border);
+    border-radius: 0 0 var(--slds-radius) var(--slds-radius);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn {
+    padding: 9px 20px;
+    border-radius: var(--slds-radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: var(--ucsf-teal);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--ucsf-teal-dark); }
+  .btn-secondary {
+    background: #fff;
+    border: 1px solid var(--ucsf-border);
+    color: var(--ucsf-text);
+  }
+  .btn-secondary:hover { background: var(--ucsf-light-bg); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ucsf-teal);
+  }
+  .btn-ghost:hover { background: #F0FAFB; }
+
+  /* ── Confirmation ── */
+  .confirmation-box {
+    display: none;
+    background: #fff;
+    border: 1px solid #2E844A;
+    border-left: 5px solid #2E844A;
+    border-radius: var(--slds-radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    max-width: 780px;
+  }
+  .confirmation-box.show { display: block; }
+  .confirmation-box h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2E844A;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .confirmation-box p { font-size: 13px; color: var(--ucsf-text); }
+  .case-number {
+    display: inline-block;
+    margin-top: 10px;
+    background: var(--ucsf-light-bg);
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ucsf-navy);
+    font-family: 'Source Sans 3', monospace;
+  }
+
+  /* ── My Requests Full Table ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .page-header h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ucsf-navy);
+  }
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-select {
+    padding: 7px 11px;
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--ucsf-text);
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+  }
+  .filter-select:focus { border-color: var(--ucsf-teal); }
+  .results-table-wrap {
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    overflow: hidden;
+    box-shadow: var(--slds-shadow);
+  }
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 13px;
+  }
+  .results-table th {
+    background: var(--ucsf-navy);
+    color: rgba(255,255,255,.85);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+  }
+  .results-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--ucsf-border);
+    vertical-align: middle;
+  }
+  .results-table tr:last-child td { border-bottom: none; }
+  .results-table tr:hover td { background: #F8FAFC; cursor: pointer; }
+  .case-link { color: var(--ucsf-teal); font-weight: 700; text-decoration: none; }
+  .case-link:hover { text-decoration: underline; }
+  .dept-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .dept-tag.facilities { background: #E6F4F5; color: #127a82; }
+  .dept-tag.campus-life { background: #FEF0CD; color: #7A4600; }
+  .dept-tag.transportation { background: #F0E6F8; color: #5E0FB4; }
+
+  /* ── Empty + Info ── */
+  .info-note {
+    background: #EEF4FE;
+    border-left: 4px solid var(--status-open);
+    border-radius: var(--slds-radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #004080;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .dept-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .dept-badge.facilities    { background: var(--ucsf-teal); }
+  .dept-badge.campus-life   { background: #FF9E0F; }
+  .dept-badge.transportation{ background: #7B5CE5; }
+
+  /* ── Utility ── */
+  .text-muted { color: var(--ucsf-muted); }
+  .mt-8 { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-16 { margin-bottom: 16px; }
+  .flex-between { display:flex; align-items:center; justify-content:space-between; }
+  .gap-8 { gap: 8px; }
+
+  /* ── Sidebar Widget ── */
+  .sidebar-stack { display: flex; flex-direction: column; gap: 16px; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #C2CAD4; border-radius: 3px; }
+
+  /* ── Knowledge Base ── */
+  .kb-section { margin-top: 16px; }
+  .kb-search-wrap {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius); padding: 9px 14px;
+    margin-bottom: 12px; box-shadow: var(--slds-shadow);
+  }
+  .kb-search-wrap svg { flex-shrink: 0; opacity: .5; }
+  .kb-search-wrap input {
+    border: none; outline: none; font-size: 13px; font-family: inherit;
+    color: var(--ucsf-text); width: 100%; background: transparent;
+  }
+  .kb-search-wrap input::placeholder { color: var(--ucsf-muted); }
+  .kb-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .kb-filter-pill {
+    padding: 4px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--ucsf-border); background: #fff;
+    cursor: pointer; color: var(--ucsf-muted); transition: all .12s;
+  }
+  .kb-filter-pill:hover { border-color: #7B5CE5; color: #5E0FB4; }
+  .kb-filter-pill.active { background: #7B5CE5; border-color: #7B5CE5; color: #fff; }
+  .kb-results-count { font-size: 12px; color: var(--ucsf-muted); margin-bottom: 10px; }
+  .kb-article {
+    background: #fff; border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius); margin-bottom: 8px;
+    overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .kb-article-q {
+    padding: 12px 16px; display: flex; align-items: center;
+    justify-content: space-between; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: var(--ucsf-navy);
+    gap: 12px; transition: background .12s;
+  }
+  .kb-article-q:hover { background: #F8FAFC; }
+  .kb-article-q.open { background: #F0FAFB; border-bottom: 1px solid var(--ucsf-border); }
+  .kb-cat-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px;
+    background: #F3EEFE; color: #5E0FB4; white-space: nowrap; flex-shrink: 0;
+  }
+  .kb-chevron { width: 16px; height: 16px; flex-shrink: 0; opacity: .5; transition: transform .2s; }
+  .kb-chevron.open { transform: rotate(180deg); }
+  .kb-article-a {
+    display: none; padding: 12px 16px 14px; font-size: 13px;
+    color: var(--ucsf-text); line-height: 1.6; background: #FAFCFE;
+  }
+  .kb-article-a.open { display: block; }
+  .kb-article-action {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 10px; font-size: 12px; font-weight: 600; color: #7B5CE5;
+    cursor: pointer; border: 1px solid #7B5CE5; padding: 4px 11px;
+    border-radius: 20px; transition: all .12s; text-decoration: none;
+  }
+  .kb-article-action:hover { background: #7B5CE5; color: #fff; }
+  .kb-empty {
+    text-align: center; padding: 32px 20px; color: var(--ucsf-muted);
+    font-size: 13px; background: #fff; border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+  }
+  .kb-empty div { font-size: 28px; margin-bottom: 10px; }
+
+  /* ── Case Detail View ───────────────────────────────────────── */
+  .case-detail-view { display: none; }
+  .case-detail-view.active { display: block; }
+
+  .case-detail-card {
+    background: #fff;
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    box-shadow: var(--slds-shadow);
+    max-width: 860px;
+    margin-bottom: 20px;
+  }
+  .case-detail-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--ucsf-border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .case-detail-meta { flex: 1; min-width: 0; }
+  .case-detail-number {
+    font-family: 'Source Serif 4', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ucsf-navy);
+    margin-bottom: 4px;
+  }
+  .case-detail-subject {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ucsf-text);
+    margin-bottom: 10px;
+  }
+  .case-detail-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .case-detail-dates {
+    font-size: 12px;
+    color: var(--ucsf-muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .case-detail-dates div { margin-bottom: 3px; }
+  .case-detail-dates strong { color: var(--ucsf-text); }
+
+  /* Status Timeline */
+  .timeline-wrap {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--ucsf-border);
+  }
+  .timeline-wrap h3 {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--ucsf-muted);
+    margin-bottom: 16px;
+  }
+  .timeline-steps {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+  }
+  .timeline-steps::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    background: var(--ucsf-border);
+    z-index: 0;
+  }
+  .timeline-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .timeline-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--ucsf-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    margin-bottom: 8px;
+    transition: all .15s;
+  }
+  .timeline-step.completed .timeline-dot {
+    background: var(--ucsf-teal);
+    border-color: var(--ucsf-teal);
+    color: #fff;
+  }
+  .timeline-step.active .timeline-dot {
+    background: #fff;
+    border-color: var(--ucsf-teal);
+    border-width: 3px;
+    box-shadow: 0 0 0 4px rgba(24,163,172,.15);
+  }
+  .timeline-step.completed .timeline-label { color: var(--ucsf-teal); font-weight: 600; }
+  .timeline-step.active .timeline-label { color: var(--ucsf-navy); font-weight: 700; }
+  .timeline-label {
+    font-size: 11px;
+    color: var(--ucsf-muted);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .timeline-ts {
+    font-size: 10px;
+    color: var(--ucsf-muted);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* Request Details section */
+  .case-detail-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--ucsf-border);
+  }
+  .case-detail-section:last-child { border-bottom: none; }
+  .case-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--ucsf-muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .detail-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ucsf-muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 3px;
+  }
+  .detail-field span {
+    font-size: 13px;
+    color: var(--ucsf-text);
+  }
+  .detail-field.full { grid-column: 1 / -1; }
+
+  /* SR/WO Work Log */
+  .work-log { display: flex; flex-direction: column; gap: 0; }
+  .wl-entry {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ucsf-border);
+  }
+  .wl-entry:last-child { border-bottom: none; }
+  .wl-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .wl-avatar.agent { background: #E6F4F5; color: var(--ucsf-teal-dark); }
+  .wl-avatar.user  { background: var(--ucsf-teal); color: #fff; }
+  .wl-avatar.system { background: #F3F3F3; color: var(--ucsf-muted); font-size: 14px; }
+  .wl-body { flex: 1; min-width: 0; }
+  .wl-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .wl-author { font-size: 13px; font-weight: 600; color: var(--ucsf-text); }
+  .wl-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 10px;
+  }
+  .wl-badge.update    { background: #D4E8FD; color: #0070D2; }
+  .wl-badge.comment   { background: #D4ECD9; color: #2E844A; }
+  .wl-badge.system    { background: #F3F3F3; color: var(--ucsf-muted); }
+  .wl-badge.escalation{ background: #FFD6D6; color: #BA0517; }
+  .wl-ts { font-size: 11px; color: var(--ucsf-muted); margin-left: auto; }
+  .wl-text { font-size: 13px; color: var(--ucsf-text); line-height: 1.55; }
+
+  /* Comment box */
+  .comment-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    margin-top: 16px;
+  }
+  .comment-box textarea {
+    flex: 1;
+    border: 1px solid var(--ucsf-border);
+    border-radius: var(--slds-radius);
+    padding: 9px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 72px;
+    outline: none;
+    color: var(--ucsf-text);
+    transition: border-color .15s;
+  }
+  .comment-box textarea:focus { border-color: var(--ucsf-teal); box-shadow: 0 0 0 3px rgba(24,163,172,.12); }
+  .comment-box textarea::placeholder { color: var(--ucsf-muted); }
+
+  /* Escalate button + banner */
+  .escalate-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .escalate-note { font-size: 12px; color: var(--ucsf-muted); }
+  .btn-escalate {
+    background: #fff;
+    border: 2px solid #BA0517;
+    color: #BA0517;
+    padding: 8px 18px;
+    border-radius: var(--slds-radius);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-escalate:hover { background: #BA0517; color: #fff; }
+  .btn-escalate:disabled { opacity: .5; cursor: not-allowed; border-color: #ccc; color: #ccc; }
+  .escalate-confirm {
+    display: none;
+    background: #FFD6D6;
+    border: 1px solid #BA0517;
+    border-radius: var(--slds-radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #7A0000;
+    margin-top: 12px;
+  }
+  .escalate-confirm.show { display: block; }
+
+  /* Mobile overrides for case detail */
+  @media (max-width: 600px) {
+    .case-detail-header { flex-direction: column; }
+    .case-detail-dates { text-align: left; }
+    .detail-grid { grid-template-columns: 1fr 1fr; }
+    .timeline-label { font-size: 10px; }
+    .timeline-ts { display: none; }
+    .escalate-bar { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ── Responsive — Tablet (≤900px) ───────────────────────────── */
+  @media (max-width: 900px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+    .sidebar-stack {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .service-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* ── Responsive — Mobile (≤600px) ───────────────────────────── */
+  @media (max-width: 600px) {
+    /* Header */
+    .global-header {
+      padding: 0 14px;
+      height: 48px;
+    }
+    .header-divider,
+    .portal-title,
+    .header-right .header-search { display: none; }
+    .user-name { display: none; }
+    .ucsf-wordmark { font-size: 16px; }
+
+    /* Announcement */
+    .announcement { padding: 8px 14px; font-size: 12px; }
+
+    /* Main container */
+    .main-container { padding: 16px 12px 32px; }
+
+    /* Greeting */
+    .greeting-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .greeting-text h1 { font-size: 18px; }
+
+    /* Dept tabs — scrollable row */
+    .dept-tabs {
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .dept-tabs::-webkit-scrollbar { display: none; }
+    .dept-tab {
+      padding: 9px 14px;
+      font-size: 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Service tiles — 2 columns on mobile */
+    .service-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .service-tile { padding: 12px 10px; }
+    .tile-icon { width: 38px; height: 38px; font-size: 18px; }
+    .tile-label { font-size: 12px; }
+    .tile-desc { font-size: 10px; }
+
+    /* Sidebar stacks vertically on mobile */
+    .sidebar-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Form */
+    .form-card { max-width: 100%; }
+    .form-header { padding: 14px 16px; }
+    .form-section { padding: 16px; }
+    .form-row.cols-2,
+    .form-row.cols-3 { grid-template-columns: 1fr; }
+    .form-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .form-actions > div {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .form-actions .btn { width: 100%; justify-content: center; }
+    .priority-group {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .priority-option { text-align: left; display: flex; gap: 10px; align-items: center; }
+    .priority-option .p-label { font-size: 13px; white-space: nowrap; }
+    .priority-option .p-desc { margin-top: 0; font-size: 11px; }
+
+    /* My Requests — scrollable table */
+    .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .page-header .btn { width: 100%; justify-content: center; }
+    .filter-bar {
+      gap: 8px;
+    }
+    .filter-bar .header-search { width: 100%; }
+    .filter-select { font-size: 12px; }
+    .results-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: var(--slds-radius);
+    }
+
+    /* KB section */
+    .kb-filters { gap: 6px; }
+    .kb-filter-pill { font-size: 11px; padding: 3px 10px; }
+    .kb-article-q { font-size: 12px; }
+
+    /* Chat widget — full-width on mobile */
+    .chat-panel {
+      left: 10px;
+      right: 10px;
+      width: auto;
+      bottom: 80px;
+    }
+    .chat-bubble { right: 16px; bottom: 16px; }
+  }
+
+  /* ── Agentforce Chat Widget ──────────────────────────────────── */
+  @keyframes chatPulse {
+    0%   { box-shadow: 0 4px 16px rgba(123,92,229,.45), 0 0 0 0 rgba(123,92,229,.35); }
+    70%  { box-shadow: 0 4px 16px rgba(123,92,229,.45), 0 0 0 12px rgba(123,92,229,0); }
+    100% { box-shadow: 0 4px 16px rgba(123,92,229,.45), 0 0 0 0 rgba(123,92,229,0); }
+  }
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: .5; }
+    30%            { transform: translateY(-5px); opacity: 1; }
+  }
+  .chat-bubble {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: #7B5CE5;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    animation: chatPulse 2.4s ease-in-out infinite;
+    z-index: 9000;
+    transition: transform .15s, background .15s;
+  }
+  .chat-bubble:hover { transform: scale(1.08); background: #6a4dd4; animation: none; box-shadow: 0 6px 20px rgba(123,92,229,.5); }
+  .chat-bubble svg { color: #fff; }
+  .chat-bubble-tooltip {
+    position: absolute;
+    right: 64px;
+    background: #1A2533;
+    color: #fff;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s;
+  }
+  .chat-bubble:hover .chat-bubble-tooltip { opacity: 1; }
+  .chat-panel {
+    position: fixed;
+    bottom: 92px; right: 24px;
+    width: 380px; height: 520px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.18);
+    display: flex; flex-direction: column;
+    z-index: 8999;
+    overflow: hidden;
+    transform: translateY(16px) scale(.97);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .chat-panel.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: all;
+  }
+  .chat-header {
+    background: linear-gradient(135deg, #7B5CE5 0%, #5c3fc4 100%);
+    color: #fff;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+  }
+  .chat-header-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .chat-header-info { flex: 1; min-width: 0; }
+  .chat-header-title { font-size: 14px; font-weight: 700; }
+  .chat-header-badge {
+    display: inline-flex; align-items: center;
+    background: rgba(255,255,255,.22);
+    border-radius: 10px;
+    padding: 1px 8px;
+    font-size: 10px;
+    margin-top: 2px;
+    font-weight: 600;
+    letter-spacing: .3px;
+  }
+  .chat-close-btn {
+    background: rgba(255,255,255,.15);
+    border: none; color: #fff; cursor: pointer;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s;
+    flex-shrink: 0;
+  }
+  .chat-close-btn:hover { background: rgba(255,255,255,.3); }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px;
+    display: flex; flex-direction: column; gap: 12px;
+    scroll-behavior: smooth;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: #D8DEE8; border-radius: 2px; }
+  .chat-msg {
+    display: flex; align-items: flex-end; gap: 8px;
+    max-width: 90%;
+  }
+  .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+  .chat-msg.assistant { align-self: flex-start; }
+  .chat-msg-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  .chat-msg.assistant .chat-msg-avatar { background: #F3EEFE; font-size: 15px; }
+  .chat-msg.user .chat-msg-avatar { background: var(--ucsf-teal); color: #fff; font-size: 11px; font-weight: 700; }
+  .chat-msg-bubble {
+    padding: 9px 13px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 100%;
+  }
+  .chat-msg.assistant .chat-msg-bubble {
+    background: #F3F6F9;
+    border-bottom-left-radius: 4px;
+    color: var(--ucsf-text);
+  }
+  .chat-msg.user .chat-msg-bubble {
+    background: #7B5CE5;
+    border-bottom-right-radius: 4px;
+    color: #fff;
+  }
+  .chat-msg-bubble a { color: #7B5CE5; }
+  .chat-msg.user .chat-msg-bubble a { color: rgba(255,255,255,.85); }
+  .chat-form-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 8px;
+    background: #7B5CE5;
+    color: #fff;
+    border: none; border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .12s;
+  }
+  .chat-form-btn:hover { background: #6a4dd4; }
+  .chat-typing {
+    display: none;
+    align-self: flex-start;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 2px 0;
+  }
+  .chat-typing.visible { display: flex; }
+  .typing-dots {
+    background: #F3F6F9;
+    border-radius: 14px;
+    border-bottom-left-radius: 4px;
+    padding: 10px 14px;
+    display: flex; gap: 4px; align-items: center;
+  }
+  .typing-dots span {
+    width: 7px; height: 7px;
+    background: #9B8EC4;
+    border-radius: 50%;
+    display: block;
+    animation: typingBounce 1.2s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: .2s; }
+  .typing-dots span:nth-child(3) { animation-delay: .4s; }
+  .chat-input-bar {
+    border-top: 1px solid var(--ucsf-border);
+    padding: 10px 12px;
+    display: flex; align-items: flex-end; gap: 8px;
+    flex-shrink: 0;
+    background: #fff;
+  }
+  .chat-input {
+    flex: 1;
+    border: 1px solid var(--ucsf-border);
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    min-height: 36px;
+    max-height: 90px;
+    line-height: 1.4;
+    color: var(--ucsf-text);
+    transition: border-color .12s;
+    overflow-y: auto;
+  }
+  .chat-input:focus { border-color: #7B5CE5; }
+  .chat-input::placeholder { color: var(--ucsf-muted); }
+  .chat-send-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #7B5CE5;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .12s, transform .1s;
+    color: #fff;
+  }
+  .chat-send-btn:hover { background: #6a4dd4; }
+  .chat-send-btn:active { transform: scale(.92); }
+  .chat-send-btn:disabled { background: #ccc; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<!-- GLOBAL HEADER -->
+<header class="global-header">
+  <div class="logo-area">
+    <div class="ucsf-wordmark">UC<span>SF</span></div>
+    <div class="header-divider"></div>
+    <span class="portal-title">Campus Services Portal</span>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Search services, requests…">
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar">JD</div>
+      <span class="user-name">Jamie Doe · Dept. of Medicine</span>
+    </div>
+  </div>
+</header>
+
+<!-- ANNOUNCEMENT BANNER -->
+<div class="announcement">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7A4600" stroke-width="2.5">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+  <span><strong>Planned Maintenance:</strong> Hot water shutdown on Parnassus campus — Building MH, Floors 2–4 — Saturday 5/3, 7:00 AM – 2:00 PM. Submit questions via Facilities.</span>
+</div>
+
+<!-- MAIN -->
+<div class="main-container">
+
+  <!-- HOME VIEW -->
+  <div class="home-view" id="homeView">
+    <div class="greeting-bar">
+      <div class="greeting-text">
+        <h1>Hi, Jamie! 👋</h1>
+        <p>Submit a request, track your cases, or search for help across all UCSF campus services.</p>
+      </div>
+    </div>
+
+    <!-- Dept Tabs -->
+    <div class="dept-tabs">
+      <div class="dept-tab active" id="tabFacilities" onclick="switchDept('facilities')">
+        🏗️ Facilities Services
+      </div>
+      <div class="dept-tab" id="tabCampusLife" onclick="switchDept('campus-life')">
+        🏛️ Campus Life Services
+      </div>
+      <div class="dept-tab" id="tabTransportation" onclick="switchDept('transportation')">
+        🚌 Transportation Services
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <!-- LEFT: Service Tiles -->
+      <div>
+        <!-- Facilities -->
+        <div id="deptFacilities">
+          <div class="dept-badge facilities">🏗️ Facilities &amp; Building Operations</div>
+          <div class="info-note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>For life-safety emergencies (fire, flood, gas leak) call <strong>UCSF Police Dispatch: 415-476-1414</strong>. For urgent facilities issues, call <strong>BOSC: 415-476-2040</strong>.</span>
+          </div>
+          <div class="card mb-16">
+            <div class="card-header">
+              <h2>🔧 Request Specific Services</h2>
+              <span class="text-muted" style="font-size:12px;">Select a category to get started</span>
+            </div>
+            <div class="card-body">
+              <div class="service-grid" style="--dept-color: #18A3AC;">
+                <div class="service-tile" onclick="openForm('facilities','access','🔐 Access Control / Keys','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">🔐</div>
+                  <div class="tile-label">Access Control / Keys</div>
+                  <div class="tile-desc">Badge access, key requests, lockouts</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','custodial','🧹 Custodial Services','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">🧹</div>
+                  <div class="tile-label">Custodial Services</div>
+                  <div class="tile-desc">Cleaning, spills, restroom supplies</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','electrical','⚡ Electrical','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">⚡</div>
+                  <div class="tile-label">Electrical</div>
+                  <div class="tile-desc">Outlets, lighting, power issues</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','hvac','🌡️ HVAC / Temperature','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">🌡️</div>
+                  <div class="tile-label">HVAC / Temperature</div>
+                  <div class="tile-desc">Heating, cooling, ventilation</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','plumbing','🚿 Plumbing','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">🚿</div>
+                  <div class="tile-label">Plumbing</div>
+                  <div class="tile-desc">Leaks, drains, fixtures</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','elevators','🛗 Elevators','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">🛗</div>
+                  <div class="tile-label">Elevators</div>
+                  <div class="tile-desc">Out of service, malfunctions</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','structural','🏢 Structural / Grounds','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">🏢</div>
+                  <div class="tile-label">Structural / Grounds</div>
+                  <div class="tile-desc">Doors, walls, exterior, landscaping</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','pest','🐛 Pest Control','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">🐛</div>
+                  <div class="tile-label">Pest Control</div>
+                  <div class="tile-desc">Insects, rodents, infestations</div>
+                </div>
+                <div class="service-tile" onclick="openForm('facilities','general','❓ General / Other','Facilities Services')">
+                  <div class="tile-icon" style="background:#E6F4F5">❓</div>
+                  <div class="tile-label">General / Other</div>
+                  <div class="tile-desc">Not listed above</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campus Life -->
+        <div id="deptCampusLife" style="display:none">
+          <div class="dept-badge campus-life">🏛️ Campus Life Services</div>
+          <div class="info-note" style="background:#FEF8EC; border-left-color:#FF9E0F; color:#7A4600;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><strong>New on this portal:</strong> Campus Life Services is piloting structured digital intake — replacing email and phone-only inquiry. Your submissions go directly to the right team.</span>
+          </div>
+          <div class="card mb-16">
+            <div class="card-header">
+              <h2>🏛️ Request Campus Life Services</h2>
+              <span class="text-muted" style="font-size:12px;">Select a category to get started</span>
+            </div>
+            <div class="card-body">
+              <div class="service-grid" style="--dept-color: #FF9E0F;">
+                <div class="service-tile" onclick="openForm('campus-life','events','🎪 Event Spaces','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">🎪</div>
+                  <div class="tile-label">Event Spaces</div>
+                  <div class="tile-desc">Reserve rooms, auditoriums, outdoor areas</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','food','🍽️ Food Services','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">🍽️</div>
+                  <div class="tile-label">Food Services</div>
+                  <div class="tile-desc">Catering, café feedback, meal accounts</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','wellness','💪 Recreation & Wellness','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">💪</div>
+                  <div class="tile-label">Recreation & Wellness</div>
+                  <div class="tile-desc">Gym access, fitness programs, wellness</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','childcare','👶 Child Care','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">👶</div>
+                  <div class="tile-label">Child Care</div>
+                  <div class="tile-desc">UCSF Childcare Center inquiries</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','sustainability','♻️ Sustainability','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">♻️</div>
+                  <div class="tile-label">Sustainability</div>
+                  <div class="tile-desc">Recycling, composting, green initiatives</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','housing','🏠 Faculty & Staff Housing','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">🏠</div>
+                  <div class="tile-label">Faculty & Staff Housing</div>
+                  <div class="tile-desc">Rental inquiries, maintenance, billing</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','arts','🎨 Arts & Culture','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">🎨</div>
+                  <div class="tile-label">Arts & Culture</div>
+                  <div class="tile-desc">Exhibits, programs, cultural events</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','employee','🤝 Employee Programs','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">🤝</div>
+                  <div class="tile-label">Employee Programs</div>
+                  <div class="tile-desc">Benefits, work-life, recognition</div>
+                </div>
+                <div class="service-tile" onclick="openForm('campus-life','general','❓ General Inquiry','Campus Life Services')">
+                  <div class="tile-icon" style="background:#FEF0CD">❓</div>
+                  <div class="tile-label">General Inquiry</div>
+                  <div class="tile-desc">Not listed above</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transportation -->
+        <div id="deptTransportation" style="display:none">
+          <div class="dept-badge transportation">🚌 Transportation Services</div>
+          <div class="info-note" style="background:#F3EEFE; border-left-color:#7B5CE5; color:#3D1280;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><strong>New on this portal:</strong> Transportation Services is joining the UCSF Campus Services Portal. Submit permit requests, report issues, and track all inquiries in one place.</span>
+          </div>
+          <div class="card mb-16">
+            <div class="card-header">
+              <h2>🚌 Request Transportation Services</h2>
+              <span class="text-muted" style="font-size:12px;">Select a category to get started</span>
+            </div>
+            <div class="card-body">
+              <div class="service-grid" style="--dept-color: #7B5CE5;">
+                <div class="service-tile" onclick="openForm('transportation','parking','🅿️ Parking Permits','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">🅿️</div>
+                  <div class="tile-label">Parking Permits</div>
+                  <div class="tile-desc">New, renewal, cancellation</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','shuttle','🚍 Shuttle & Transit','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">🚍</div>
+                  <div class="tile-label">Shuttle & Transit</div>
+                  <div class="tile-desc">Routes, schedules, service issues</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','fleet','🚐 Fleet / Vehicle Request','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">🚐</div>
+                  <div class="tile-label">Fleet / Vehicle Request</div>
+                  <div class="tile-desc">Reserve a UCSF vehicle</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','bike','🚲 Bike Program','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">🚲</div>
+                  <div class="tile-label">Bike Program</div>
+                  <div class="tile-desc">Bike storage, lockers, repairs</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','rideshare','🚗 Rideshare / Commuter','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">🚗</div>
+                  <div class="tile-label">Rideshare / Commuter</div>
+                  <div class="tile-desc">Lyft, Clipper, commuter benefits</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','ev','⚡ EV Charging','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">⚡</div>
+                  <div class="tile-label">EV Charging</div>
+                  <div class="tile-desc">Station issues, access, billing</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','violation','📋 Citation / Appeals','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">📋</div>
+                  <div class="tile-label">Citation / Appeals</div>
+                  <div class="tile-desc">Contest a parking citation</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','access','♿ Accessible Transport','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">♿</div>
+                  <div class="tile-label">Accessible Transport</div>
+                  <div class="tile-desc">ADA paratransit, accessibility requests</div>
+                </div>
+                <div class="service-tile" onclick="openForm('transportation','general','❓ General Inquiry','Transportation Services')">
+                  <div class="tile-icon" style="background:#F3EEFE">❓</div>
+                  <div class="tile-label">General Inquiry</div>
+                  <div class="tile-desc">Not listed above</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Knowledge Base ── -->
+          <div class="kb-section">
+            <div style="background:#fff;border:1px solid var(--ucsf-border);border-radius:var(--slds-radius);box-shadow:var(--slds-shadow);">
+              <div style="padding:14px 18px;border-bottom:1px solid var(--ucsf-border);display:flex;align-items:center;justify-content:space-between;">
+                <h2 style="font-size:14px;font-weight:700;color:var(--ucsf-navy);display:flex;align-items:center;gap:8px;">📚 Transportation Knowledge Base</h2>
+                <span style="font-size:12px;color:var(--ucsf-muted);">Find answers before submitting a request</span>
+              </div>
+              <div style="padding:16px 18px;">
+                <div class="kb-search-wrap">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="kbSearch" placeholder="Search parking, shuttles, permits, commuter benefits…" oninput="renderKB()">
+                </div>
+                <div class="kb-filters" id="kbFilters"></div>
+                <div class="kb-results-count" id="kbCount"></div>
+                <div id="kbResults"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="sidebar-stack">
+        <!-- My Recent Requests -->
+        <div class="card">
+          <div class="card-header">
+            <h2>📋 My Recent Requests</h2>
+            <a class="view-all-link" onclick="showRequestsView()">View all →</a>
+          </div>
+          <div class="card-body" style="padding-top:4px">
+            <div class="request-item" onclick="showCaseDetail('CS-004821')" style="cursor:pointer">
+              <div class="request-top">
+                <span class="request-case">CS-004821</span>
+                <span class="status-badge in-progress">In Progress</span>
+              </div>
+              <div class="request-title">HVAC — No cooling in office</div>
+              <div class="request-meta">Facilities · MH 1234 · Submitted Apr 29</div>
+            </div>
+            <div class="request-item" onclick="showCaseDetail('CS-004756')" style="cursor:pointer">
+              <div class="request-top">
+                <span class="request-case">CS-004756</span>
+                <span class="status-badge resolved">Resolved</span>
+              </div>
+              <div class="request-title">Parking Permit — Annual Renewal</div>
+              <div class="request-meta">Transportation · Submitted Apr 18</div>
+            </div>
+            <div class="request-item" onclick="showCaseDetail('CS-004701')" style="cursor:pointer">
+              <div class="request-top">
+                <span class="request-case">CS-004701</span>
+                <span class="status-badge resolved">Resolved</span>
+              </div>
+              <div class="request-title">Event Space — Conference Room B2</div>
+              <div class="request-meta">Campus Life · Submitted Apr 11</div>
+            </div>
+            <div class="request-item" onclick="showCaseDetail('CS-004633')" style="cursor:pointer">
+              <div class="request-top">
+                <span class="request-case">CS-004633</span>
+                <span class="status-badge closed">Closed</span>
+              </div>
+              <div class="request-title">Restroom supplies — 3rd floor MH</div>
+              <div class="request-meta">Facilities · SR-298842 · Submitted Apr 2</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Helpful Links -->
+        <div class="card">
+          <div class="card-header">
+            <h2>🔗 Helpful Links</h2>
+          </div>
+          <div class="card-body" style="padding-top:4px">
+            <a class="help-link" href="https://help.ucsf.edu" target="_blank" rel="noopener">
+              <span class="help-link-icon">💻</span>
+              Get IT Help (help.ucsf.edu)
+            </a>
+            <a class="help-link" href="https://campuslifeserviceshome.ucsf.edu/facilities" target="_blank" rel="noopener">
+              <span class="help-link-icon">📘</span>
+              Facilities Service Guides
+            </a>
+            <a class="help-link" href="https://www.ucsf.edu/about/locations#active-default" target="_blank" rel="noopener">
+              <span class="help-link-icon">🗺️</span>
+              UCSF Campus Map
+            </a>
+            <a class="help-link" href="https://campuslifeserviceshome.ucsf.edu/transportation/plan-your-shuttle-trip" target="_blank" rel="noopener">
+              <span class="help-link-icon">🚌</span>
+              Shuttle Schedules & Routes
+            </a>
+            <a class="help-link" href="https://campuslifeserviceshome.ucsf.edu/facilities/campus-facilities-services-coverage-catalogue" target="_blank" rel="noopener">
+              <span class="help-link-icon">📋</span>
+              SOPs & Building Guides
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- REQUEST FORM VIEW -->
+  <div class="form-view" id="formView">
+    <div class="greeting-bar">
+      <div class="breadcrumb">
+        <a onclick="showHome()">Home</a>
+        <span>›</span>
+        <span id="formBreadcrumbDept">Facilities Services</span>
+        <span>›</span>
+        <span id="formBreadcrumbCat">New Request</span>
+      </div>
+    </div>
+
+    <!-- Confirmation -->
+    <div class="confirmation-box" id="confirmationBox">
+      <h3>✅ Request Submitted Successfully</h3>
+      <p>Your request has been received and routed to the appropriate team. You'll receive an email confirmation and updates as your case progresses.</p>
+      <div class="case-number" id="confirmedCaseNum">CS-004999</div>
+      <div style="margin-top:14px; display:flex; gap:10px;">
+        <button class="btn btn-secondary" onclick="showRequestsView()">View My Requests</button>
+        <button class="btn btn-ghost" onclick="showHome()">Submit Another Request</button>
+      </div>
+    </div>
+
+    <div class="form-card" id="formCard">
+      <div class="form-header" id="formHeaderEl">
+        <div class="form-header-icon" id="formIcon">🔧</div>
+        <div>
+          <h2 id="formTitle">Service Request</h2>
+          <p id="formSubtitle">Facilities Services · UCSF Building Operations</p>
+        </div>
+      </div>
+
+      <!-- Section 1: Requester Info -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Requester Information
+          <span class="auto-badge">✓ Auto-populated via MyAccess</span>
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-field">
+            <label>First Name</label>
+            <input type="text" value="Jamie" readonly>
+          </div>
+          <div class="form-field">
+            <label>Last Name</label>
+            <input type="text" value="Doe" readonly>
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input type="text" value="jamie.doe@ucsf.edu" readonly>
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-field">
+            <label>Department</label>
+            <input type="text" value="Dept. of Medicine" readonly>
+          </div>
+          <div class="form-field">
+            <label>Phone (optional)</label>
+            <input type="tel" placeholder="415-555-XXXX">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Location -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Location
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-field">
+            <label>Campus <span class="required">*</span></label>
+            <select>
+              <option>Parnassus</option>
+              <option>Mission Bay</option>
+              <option>Zuckerberg SF General</option>
+              <option>Mt. Zion</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Building <span class="required">*</span></label>
+            <select>
+              <option value="">— Select Building —</option>
+              <option>Medical Sciences Building (MS)</option>
+              <option selected>Millberry Union (MU)</option>
+              <option>Health Sciences East (HSE)</option>
+              <option>Medical Center (MH)</option>
+              <option>Cole Hall</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Floor</label>
+            <select>
+              <option value="">— Floor —</option>
+              <option>Basement</option>
+              <option>1</option>
+              <option>2</option>
+              <option selected>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-field">
+            <label>Room / Suite</label>
+            <input type="text" placeholder="e.g. 312B">
+          </div>
+          <div class="form-field">
+            <label>Additional Location Details</label>
+            <input type="text" placeholder="Near elevator, north end, etc.">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Request Details -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Request Details
+        </div>
+        <div class="form-row" id="serviceTypeRow">
+          <div class="form-field">
+            <label>Service Type <span class="required">*</span></label>
+            <select id="serviceTypeSelect">
+              <option value="">— Select —</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Subject / Brief Description <span class="required">*</span></label>
+            <input type="text" placeholder="e.g. Air conditioning not working in office 312B">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Detailed Description <span class="required">*</span></label>
+            <textarea placeholder="Please describe the issue in detail — what happened, when it started, who is affected, and any steps already taken…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Priority -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Priority
+        </div>
+        <div class="priority-group">
+          <label class="priority-option p-emergency" onclick="selectPriority(this)">
+            <input type="radio" name="priority" value="emergency">
+            <span class="p-label">🚨 Emergency</span>
+            <span class="p-desc">Life/safety risk — immediate response needed</span>
+          </label>
+          <label class="priority-option p-urgent" onclick="selectPriority(this)">
+            <input type="radio" name="priority" value="urgent">
+            <span class="p-label">⚠️ Urgent</span>
+            <span class="p-desc">Operations significantly impacted</span>
+          </label>
+          <label class="priority-option p-routine selected" onclick="selectPriority(this)">
+            <input type="radio" name="priority" value="routine" checked>
+            <span class="p-label">📋 Routine</span>
+            <span class="p-desc">Normal priority, next business day</span>
+          </label>
+          <label class="priority-option p-low" onclick="selectPriority(this)">
+            <input type="radio" name="priority" value="low">
+            <span class="p-label">📌 Low</span>
+            <span class="p-desc">Cosmetic, no operational impact</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Section 5: Attachments -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          Attachments (optional)
+        </div>
+        <div class="file-drop">
+          <div class="file-drop-icon">📎</div>
+          <p><strong>Drag &amp; drop files here</strong> or click to browse</p>
+          <p style="margin-top:4px; font-size:11px;">Photos, documents, screenshots — max 25MB per file</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="showHome()">← Cancel</button>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span style="font-size:11px; color:var(--ucsf-muted)">A case number will be emailed to you upon submission</span>
+          <button class="btn btn-primary" onclick="submitForm()">
+            Submit Request →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY REQUESTS VIEW -->
+  <div class="requests-view" id="requestsView">
+    <div class="greeting-bar">
+      <div class="breadcrumb">
+        <a onclick="showHome()">Home</a>
+        <span>›</span>
+        <span>My Requests</span>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h2>My Requests</h2>
+      <button class="btn btn-primary" onclick="showHome()">+ New Request</button>
+    </div>
+
+    <div class="filter-bar">
+      <select class="filter-select">
+        <option>All Departments</option>
+        <option>Facilities Services</option>
+        <option>Campus Life Services</option>
+        <option>Transportation Services</option>
+      </select>
+      <select class="filter-select">
+        <option>All Statuses</option>
+        <option>New</option>
+        <option>Open</option>
+        <option>In Progress</option>
+        <option>Resolved</option>
+        <option>Closed</option>
+      </select>
+      <select class="filter-select">
+        <option>All Time</option>
+        <option>Last 30 Days</option>
+        <option>Last 90 Days</option>
+        <option>This Year</option>
+      </select>
+      <div class="header-search" style="border-color:var(--ucsf-border); background:#fff; width:200px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5C6878" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" placeholder="Search cases…" style="color:var(--ucsf-text)">
+      </div>
+    </div>
+
+    <div class="results-table-wrap">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Case #</th>
+          <th>Department</th>
+          <th>Category</th>
+          <th>Subject</th>
+          <th>Status</th>
+          <th>SR / WO #</th>
+          <th>Submitted</th>
+          <th>Last Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr onclick="showCaseDetail('CS-004821')" style="cursor:pointer">
+          <td><a class="case-link">CS-004821</a></td>
+          <td><span class="dept-tag facilities">Facilities</span></td>
+          <td>HVAC</td>
+          <td>No cooling in office 312B — MH</td>
+          <td><span class="status-badge in-progress">In Progress</span></td>
+          <td style="font-size:11px; color:var(--ucsf-muted)">SR-299104</td>
+          <td style="font-size:12px">Apr 29, 2026</td>
+          <td style="font-size:12px">May 1, 2026</td>
+        </tr>
+        <tr onclick="showCaseDetail('CS-004756')" style="cursor:pointer">
+          <td><a class="case-link">CS-004756</a></td>
+          <td><span class="dept-tag transportation">Transportation</span></td>
+          <td>Parking Permit</td>
+          <td>Annual permit renewal — Parnassus Lot C</td>
+          <td><span class="status-badge resolved">Resolved</span></td>
+          <td style="font-size:11px; color:var(--ucsf-muted)">—</td>
+          <td style="font-size:12px">Apr 18, 2026</td>
+          <td style="font-size:12px">Apr 21, 2026</td>
+        </tr>
+        <tr onclick="showCaseDetail('CS-004701')" style="cursor:pointer">
+          <td><a class="case-link">CS-004701</a></td>
+          <td><span class="dept-tag campus-life">Campus Life</span></td>
+          <td>Event Spaces</td>
+          <td>Reserve Conference Room B2 for May 15 dept. meeting</td>
+          <td><span class="status-badge resolved">Resolved</span></td>
+          <td style="font-size:11px; color:var(--ucsf-muted)">—</td>
+          <td style="font-size:12px">Apr 11, 2026</td>
+          <td style="font-size:12px">Apr 13, 2026</td>
+        </tr>
+        <tr onclick="showCaseDetail('CS-004633')" style="cursor:pointer">
+          <td><a class="case-link">CS-004633</a></td>
+          <td><span class="dept-tag facilities">Facilities</span></td>
+          <td>Custodial</td>
+          <td>Restroom paper towel dispenser empty — 3rd floor MH</td>
+          <td><span class="status-badge closed">Closed</span></td>
+          <td style="font-size:11px; color:var(--ucsf-muted)">SR-298842 / WO-118833</td>
+          <td style="font-size:12px">Apr 2, 2026</td>
+          <td style="font-size:12px">Apr 2, 2026</td>
+        </tr>
+        <tr onclick="showCaseDetail('CS-004512')" style="cursor:pointer">
+          <td><a class="case-link">CS-004512</a></td>
+          <td><span class="dept-tag transportation">Transportation</span></td>
+          <td>Shuttle & Transit</td>
+          <td>Shuttle not arriving at Parnassus stop — morning route</td>
+          <td><span class="status-badge closed">Closed</span></td>
+          <td style="font-size:11px; color:var(--ucsf-muted)">—</td>
+          <td style="font-size:12px">Mar 22, 2026</td>
+          <td style="font-size:12px">Mar 24, 2026</td>
+        </tr>
+        <tr onclick="showCaseDetail('CS-004488')" style="cursor:pointer">
+          <td><a class="case-link">CS-004488</a></td>
+          <td><span class="dept-tag facilities">Facilities</span></td>
+          <td>Electrical</td>
+          <td>Two outlets not working in Lab Suite 210</td>
+          <td><span class="status-badge closed">Closed</span></td>
+          <td style="font-size:11px; color:var(--ucsf-muted)">SR-298201 / WO-117940</td>
+          <td style="font-size:12px">Mar 15, 2026</td>
+          <td style="font-size:12px">Mar 17, 2026</td>
+        </tr>
+        <tr onclick="showCaseDetail('CS-004399')" style="cursor:pointer">
+          <td><a class="case-link">CS-004399</a></td>
+          <td><span class="dept-tag campus-life">Campus Life</span></td>
+          <td>Food Services</td>
+          <td>Catering inquiry for faculty event — May 8</td>
+          <td><span class="status-badge closed">Closed</span></td>
+          <td style="font-size:11px; color:var(--ucsf-muted)">—</td>
+          <td style="font-size:12px">Mar 5, 2026</td>
+          <td style="font-size:12px">Mar 6, 2026</td>
+        </tr>
+      </tbody>
+    </table>
+    </div><!-- end results-table-wrap -->
+
+    <div style="margin-top:12px; font-size:12px; color:var(--ucsf-muted);">
+      Showing 7 cases · Maximo SR/WO numbers sync automatically for Facilities requests
+    </div>
+  </div>
+
+  <!-- CASE DETAIL VIEW -->
+  <div class="case-detail-view" id="caseDetailView">
+    <div class="greeting-bar">
+      <div class="breadcrumb">
+        <a onclick="showHome()">Home</a>
+        <span>›</span>
+        <a onclick="showRequestsView()">My Requests</a>
+        <span>›</span>
+        <span id="cdBreadcrumb">CS-004821</span>
+      </div>
+    </div>
+
+    <div class="case-detail-card" id="caseDetailCard">
+      <!-- Populated by openCaseDetail() -->
+    </div>
+  </div>
+</div><!-- end main-container -->
+
+<script>
+// ── Case data ─────────────────────────────────────────────────
+const CASES = {
+  'CS-004821': {
+    caseNum: 'CS-004821',
+    subject: 'No cooling in office 312B — Medical Center (MH)',
+    dept: 'Facilities Services',
+    deptKey: 'facilities',
+    category: 'HVAC',
+    serviceType: 'No Cooling / AC',
+    status: 'in-progress',
+    statusLabel: 'In Progress',
+    priority: '⚠️ Urgent',
+    srwo: 'SR-299104',
+    submitted: 'Apr 29, 2026 · 9:14 AM',
+    lastUpdate: 'May 1, 2026 · 2:30 PM',
+    location: 'Parnassus · Medical Center (MH) · Floor 3 · Room 312B',
+    description: 'The AC has not been functioning in office 312B since Monday morning (Apr 27). Room temperature is reaching 82°F by midday, making the space unusable. Four staff members are affected. Building maintenance was verbally notified but no work order was created.',
+    timelineStatus: 'in-progress',
+    log: [
+      { ts: 'Apr 29, 2026 · 9:14 AM', author: 'System', role: 'system', type: 'system', text: 'Case CS-004821 created. Routed to Facilities Services — HVAC queue.' },
+      { ts: 'Apr 29, 2026 · 10:02 AM', author: 'Brian M. (BOSC)', role: 'agent', type: 'update', text: 'Case received and reviewed. Priority upgraded to Urgent based on multi-occupant impact. Maximo SR-299104 created and assigned to HVAC technician team.' },
+      { ts: 'Apr 29, 2026 · 3:45 PM', author: 'Brian M. (BOSC)', role: 'agent', type: 'update', text: 'Technician dispatched. Initial assessment: compressor fault on 3rd floor AHU unit. Parts on order — ETA 48 hours. Temporary fan units being arranged for 312B.' },
+      { ts: 'Apr 30, 2026 · 9:00 AM', author: 'Jamie Doe', role: 'user', type: 'comment', text: 'Thank you for the update. The temporary fans help but it is still quite warm in the afternoon. Can you confirm the parts ETA?' },
+      { ts: 'May 1, 2026 · 2:30 PM', author: 'Brian M. (BOSC)', role: 'agent', type: 'update', text: 'Parts arrived. Repair work scheduled for tomorrow (May 2) between 7–9 AM. Access to 312B will be needed — please ensure the space is unlocked. Estimated completion before 10 AM.' },
+    ]
+  },
+  'CS-004756': {
+    caseNum: 'CS-004756',
+    subject: 'Annual parking permit renewal — Parnassus Lot C',
+    dept: 'Transportation Services',
+    deptKey: 'transportation',
+    category: 'Parking Permit',
+    serviceType: 'Permit Renewal',
+    status: 'resolved',
+    statusLabel: 'Resolved',
+    priority: '📋 Routine',
+    srwo: '—',
+    submitted: 'Apr 18, 2026 · 11:30 AM',
+    lastUpdate: 'Apr 21, 2026 · 4:15 PM',
+    location: 'Parnassus Campus',
+    description: 'Requesting annual renewal of employee parking permit for Parnassus ACC Garage / Lot C. Current permit expires April 30, 2026. Plate: 7XYZ123.',
+    timelineStatus: 'resolved',
+    log: [
+      { ts: 'Apr 18, 2026 · 11:30 AM', author: 'System', role: 'system', type: 'system', text: 'Case CS-004756 created. Routed to Transportation Services — Parking Permit queue.' },
+      { ts: 'Apr 18, 2026 · 2:00 PM', author: 'Maria C. (Transportation)', role: 'agent', type: 'update', text: 'Request received. Verifying departmental approval on file for plate 7XYZ123. No action needed from you at this time.' },
+      { ts: 'Apr 21, 2026 · 4:15 PM', author: 'Maria C. (Transportation)', role: 'agent', type: 'update', text: 'Renewal confirmed. Your permit has been extended through April 30, 2027 in Pay by Phone under plate 7XYZ123. No action needed — you will be charged monthly as before. Case closed.' },
+    ]
+  },
+  'CS-004701': {
+    caseNum: 'CS-004701',
+    subject: 'Reserve Conference Room B2 — Cole Hall 101 — May 15 dept. meeting',
+    dept: 'Campus Life Services',
+    deptKey: 'campus-life',
+    category: 'Event Spaces',
+    serviceType: 'Room Reservation',
+    status: 'resolved',
+    statusLabel: 'Resolved',
+    priority: '📋 Routine',
+    srwo: '—',
+    submitted: 'Apr 11, 2026 · 8:55 AM',
+    lastUpdate: 'Apr 13, 2026 · 1:00 PM',
+    location: 'Parnassus · Cole Hall · Room 101',
+    description: 'Requesting reservation of Cole Hall Room 101 (Conference Room B2) for Thursday May 15, 2026, 2:00–4:30 PM. Dept. of Medicine quarterly team meeting. Expected attendance: 18 people. AV setup needed: projector + lapel mic.',
+    timelineStatus: 'resolved',
+    log: [
+      { ts: 'Apr 11, 2026 · 8:55 AM', author: 'System', role: 'system', type: 'system', text: 'Case CS-004701 created. Routed to Campus Life Services — Event Spaces queue.' },
+      { ts: 'Apr 12, 2026 · 10:30 AM', author: 'Jaycee R. (Campus Life)', role: 'agent', type: 'update', text: 'Room checked — Cole Hall 101 is available on May 15 from 2:00–4:30 PM. Reservation held for your department. AV setup (projector + lapel mic) noted.' },
+      { ts: 'Apr 13, 2026 · 1:00 PM', author: 'Jaycee R. (Campus Life)', role: 'agent', type: 'update', text: 'Reservation confirmed. You will receive a calendar invite and building access details to share with attendees. AV tech will be on-site at 1:45 PM for setup. Case resolved.' },
+    ]
+  },
+  'CS-004633': {
+    caseNum: 'CS-004633',
+    subject: 'Restroom paper towel dispenser empty — 3rd floor MH',
+    dept: 'Facilities Services',
+    deptKey: 'facilities',
+    category: 'Custodial',
+    serviceType: 'Restroom Supplies',
+    status: 'closed',
+    statusLabel: 'Closed',
+    priority: '📌 Low',
+    srwo: 'SR-298842 / WO-118833',
+    submitted: 'Apr 2, 2026 · 2:10 PM',
+    lastUpdate: 'Apr 2, 2026 · 5:30 PM',
+    location: 'Parnassus · Medical Center (MH) · Floor 3 · Restroom near elevator',
+    description: 'Paper towel dispenser in the 3rd floor MH restroom (near east elevator) has been empty since this morning. Please restock.',
+    timelineStatus: 'closed',
+    log: [
+      { ts: 'Apr 2, 2026 · 2:10 PM', author: 'System', role: 'system', type: 'system', text: 'Case CS-004633 created. Routed to Facilities Services — Custodial queue.' },
+      { ts: 'Apr 2, 2026 · 3:00 PM', author: 'BOSC Custodial Team', role: 'agent', type: 'update', text: 'Work order WO-118833 created. Custodial crew dispatched to 3rd floor MH.' },
+      { ts: 'Apr 2, 2026 · 5:30 PM', author: 'BOSC Custodial Team', role: 'agent', type: 'update', text: 'Dispenser restocked. Issue resolved. Case closed.' },
+    ]
+  },
+  'CS-004512': {
+    caseNum: 'CS-004512',
+    subject: 'Shuttle not arriving at Parnassus stop — morning route',
+    dept: 'Transportation Services',
+    deptKey: 'transportation',
+    category: 'Shuttle & Transit',
+    serviceType: 'Shuttle Not Arriving',
+    status: 'closed',
+    statusLabel: 'Closed',
+    priority: '⚠️ Urgent',
+    srwo: '—',
+    submitted: 'Mar 22, 2026 · 8:05 AM',
+    lastUpdate: 'Mar 24, 2026 · 11:00 AM',
+    location: 'Parnassus Campus — Main Shuttle Stop',
+    description: 'The 7:45 AM Parnassus–Mission Bay express shuttle did not arrive this morning (Mar 22). No alert was sent via the app. Several employees were left waiting for over 30 minutes before taking Muni. This is the third occurrence in two weeks.',
+    timelineStatus: 'closed',
+    log: [
+      { ts: 'Mar 22, 2026 · 8:05 AM', author: 'System', role: 'system', type: 'system', text: 'Case CS-004512 created. Routed to Transportation Services — Shuttle & Transit queue.' },
+      { ts: 'Mar 22, 2026 · 10:00 AM', author: 'Maria C. (Transportation)', role: 'agent', type: 'update', text: 'Investigating. Pulling GPS logs and dispatch records for the 7:45 AM P-MB Express route on Mar 22.' },
+      { ts: 'Mar 23, 2026 · 9:15 AM', author: 'Maria C. (Transportation)', role: 'agent', type: 'update', text: 'Root cause identified: driver assigned to route called out sick and the backup driver was not notified due to a dispatcher communication gap. Shuttle dispatch protocol has been updated to add a secondary notification step. Repeat incidents should not occur.' },
+      { ts: 'Mar 24, 2026 · 11:00 AM', author: 'Maria C. (Transportation)', role: 'agent', type: 'update', text: 'Follow-up confirmed: no missed arrivals on this route since the protocol update. We apologize for the disruption. Case closed.' },
+    ]
+  },
+  'CS-004488': {
+    caseNum: 'CS-004488',
+    subject: 'Two outlets not working in Lab Suite 210',
+    dept: 'Facilities Services',
+    deptKey: 'facilities',
+    category: 'Electrical',
+    serviceType: 'Outlet / Receptacle Issue',
+    status: 'closed',
+    statusLabel: 'Closed',
+    priority: '⚠️ Urgent',
+    srwo: 'SR-298201 / WO-117940',
+    submitted: 'Mar 15, 2026 · 11:45 AM',
+    lastUpdate: 'Mar 17, 2026 · 3:00 PM',
+    location: 'Parnassus · Health Sciences East (HSE) · Floor 2 · Lab Suite 210',
+    description: 'Two wall outlets on the north wall of Lab Suite 210 are non-functional. Lab equipment (centrifuge and -80°C freezer power strip) are affected. Freezer is currently on a working outlet nearby but the configuration is unsafe for long-term use.',
+    timelineStatus: 'closed',
+    log: [
+      { ts: 'Mar 15, 2026 · 11:45 AM', author: 'System', role: 'system', type: 'system', text: 'Case CS-004488 created. Routed to Facilities Services — Electrical queue. Priority set to Urgent (lab equipment affected).' },
+      { ts: 'Mar 15, 2026 · 1:30 PM', author: 'Brian M. (BOSC)', role: 'agent', type: 'update', text: 'SR-298201 created in Maximo. Electrician assigned. Will assess north wall circuit in HSE 210.' },
+      { ts: 'Mar 16, 2026 · 9:00 AM', author: 'Brian M. (BOSC)', role: 'agent', type: 'update', text: 'Assessment complete. Tripped GFCI breaker identified as root cause — likely triggered by moisture near the lab sink. WO-117940 issued for repair and GFCI replacement.' },
+      { ts: 'Mar 17, 2026 · 3:00 PM', author: 'Brian M. (BOSC)', role: 'agent', type: 'update', text: 'Repair complete. Both outlets restored and tested. GFCI reset and replaced with a sealed unit appropriate for wet lab proximity. Please test your equipment and confirm. Case closed.' },
+    ]
+  },
+  'CS-004399': {
+    caseNum: 'CS-004399',
+    subject: 'Catering inquiry for faculty event — May 8',
+    dept: 'Campus Life Services',
+    deptKey: 'campus-life',
+    category: 'Food Services',
+    serviceType: 'Catering Request',
+    status: 'closed',
+    statusLabel: 'Closed',
+    priority: '📋 Routine',
+    srwo: '—',
+    submitted: 'Mar 5, 2026 · 3:30 PM',
+    lastUpdate: 'Mar 6, 2026 · 10:00 AM',
+    location: 'Parnassus · Millberry Union (MU) · Conf. Room 3A',
+    description: 'Requesting catering for a faculty recognition event on May 8, 2026 from 3:00–5:00 PM in MU Conference Room 3A. Expected 25 attendees. Light appetizers and beverages. Budget: $600. Dietary accommodations: 2 vegan, 1 nut allergy.',
+    timelineStatus: 'closed',
+    log: [
+      { ts: 'Mar 5, 2026 · 3:30 PM', author: 'System', role: 'system', type: 'system', text: 'Case CS-004399 created. Routed to Campus Life Services — Food Services queue.' },
+      { ts: 'Mar 6, 2026 · 10:00 AM', author: 'Jaycee R. (Campus Life)', role: 'agent', type: 'update', text: 'Request reviewed. Catering menu options for $600 budget (25 guests) sent to jamie.doe@ucsf.edu. Please reply with your selection by March 20 to confirm. Dietary accommodations (2 vegan, 1 nut-free) noted and will be flagged to the kitchen. Case closed pending your selection reply.' },
+    ]
+  }
+};
+
+// ── Service type options per category ──
+const serviceTypes = {
+  facilities: {
+    access:     ['Badge / Card Access Request','Key Request','Lockout Assistance','Access Removal / Termination','Door Malfunction','Safe / Lock Issue'],
+    custodial:  ['General Cleaning','Spill / Biohazard Cleanup','Restroom Supplies','Trash / Recycling','Deep Clean Request','Graffiti Removal'],
+    electrical: ['Outlet / Receptacle Issue','Lighting — Burnt Out','Lighting — Fixture Malfunction','Power Outage (partial)','Electrical Panel Issue','Data / Telecom Cabling'],
+    hvac:       ['No Heating','No Cooling / AC','Temperature Too Hot','Temperature Too Cold','Ventilation / Air Quality','Thermostat Issue','Odor / Fumes'],
+    plumbing:   ['Leak / Dripping','Clogged Drain','Toilet Not Working','No Hot Water','Faucet Issue','Sewage Backup'],
+    elevators:  ['Elevator Out of Service','Elevator Malfunction','Elevator Stuck / Entrapment','Door Sensor Issue','Accessibility Concern'],
+    structural: ['Door / Window Issue','Ceiling / Wall Damage','Floor Damage','Exterior / Grounds','Roof Issue','Pest Related Structural'],
+    pest:       ['Insects / Ants','Rodents','Spiders','Bees / Wasps','Other Pest'],
+    general:    ['General Facilities Inquiry','Not Listed Above']
+  },
+  'campus-life': {
+    events:       ['Room Reservation','Outdoor Space Reservation','A/V & Equipment Setup','Event Permit','Catering Coordination','Cancellation / Change'],
+    food:         ['Catering Request','Café / Dining Feedback','Meal Account / ID Issue','Vendor Inquiry','Dietary Accommodation'],
+    wellness:     ['Gym / Fitness Center Access','Class / Program Enrollment','Equipment Issue','Personal Training','Mental Health Resource'],
+    childcare:    ['Enrollment Inquiry','Waitlist Request','Billing / Payment','Program Question','Complaint / Concern'],
+    sustainability:['Recycling Pickup','Composting Setup','Green Initiative Suggestion','Waste Reduction Request','Sustainability Event'],
+    housing:      ['Rental Inquiry','Maintenance Request (Housing)','Lease / Billing Question','Move-In / Move-Out','Noise / Neighbor Issue'],
+    arts:         ['Exhibit / Event Info','Space Request for Art','Artwork Damage Report','Cultural Program Inquiry'],
+    employee:     ['Work-Life Program','Recognition Nomination','Benefit Program Inquiry','Employee Event','Other Program'],
+    general:      ['General Campus Life Inquiry','Not Listed Above']
+  },
+  transportation: {
+    parking:      ['New Permit Application','Permit Renewal','Permit Cancellation','Temporary Permit','Reserved / ADA Permit','Lost Permit'],
+    shuttle:      ['Schedule / Route Question','Shuttle Not Arriving','Accessibility Concern (Shuttle)','New Stop Request','Driver Concern'],
+    fleet:        ['Vehicle Reservation','Fleet Vehicle Issue','Mileage / Billing Question','Accident Report','Return / Extension'],
+    bike:         ['Bike Locker / Storage Access','Bike Repair Station','Bike Share Inquiry','Locker Malfunction'],
+    rideshare:    ['Lyft / Rideshare Benefit Setup','Clipper Card','Commuter Check / Pre-tax','Program Enrollment'],
+    ev:           ['EV Charger Malfunction','EV Access / Account','EV Billing Issue','New EV Charger Request'],
+    violation:    ['Citation Appeal','Citation Info Request','Payment Question','Tow / Impound Inquiry'],
+    access:       ['Paratransit Request','ADA Accommodation','Accessible Parking','Accessibility Issue Report'],
+    general:      ['General Transportation Inquiry','Not Listed Above']
+  }
+};
+
+const formIcons = {
+  facilities: { access:'🔐', custodial:'🧹', electrical:'⚡', hvac:'🌡️', plumbing:'🚿', elevators:'🛗', structural:'🏢', pest:'🐛', general:'❓' },
+  'campus-life': { events:'🎪', food:'🍽️', wellness:'💪', childcare:'👶', sustainability:'♻️', housing:'🏠', arts:'🎨', employee:'🤝', general:'❓' },
+  transportation: { parking:'🅿️', shuttle:'🚍', fleet:'🚐', bike:'🚲', rideshare:'🚗', ev:'⚡', violation:'📋', access:'♿', general:'❓' }
+};
+
+const deptColors = {
+  facilities: '#052049',
+  'campus-life': '#7A4600',
+  transportation: '#3D1280'
+};
+
+let currentDept = 'facilities';
+let caseCounter = 4998;
+
+function switchDept(dept) {
+  currentDept = dept;
+  ['facilities','campus-life','transportation'].forEach(d => {
+    document.getElementById('dept' + d.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('')).style.display = (d === dept) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.dept-tab').forEach(t => t.classList.remove('active'));
+  const tabMap = { facilities:'tabFacilities', 'campus-life':'tabCampusLife', transportation:'tabTransportation' };
+  document.getElementById(tabMap[dept]).classList.add('active');
+  if (dept === 'transportation') initKB();
+}
+
+function openForm(dept, category, label, deptName) {
+  currentDept = dept;
+  document.getElementById('homeView').classList.add('hidden');
+  document.getElementById('formView').classList.add('active');
+  document.getElementById('requestsView').classList.remove('active');
+  document.getElementById('caseDetailView').classList.remove('active');
+  document.getElementById('confirmationBox').classList.remove('show');
+  document.getElementById('formCard').style.display = 'block';
+
+  const icon = (formIcons[dept] && formIcons[dept][category]) || '📋';
+  document.getElementById('formIcon').textContent = icon;
+  document.getElementById('formTitle').textContent = label;
+  document.getElementById('formSubtitle').textContent = deptName + ' · UCSF Campus Services';
+  document.getElementById('formBreadcrumbDept').textContent = deptName;
+  document.getElementById('formBreadcrumbCat').textContent = label;
+  document.getElementById('formHeaderEl').style.background = deptColors[dept] || '#052049';
+
+  // Populate service type dropdown
+  const sel = document.getElementById('serviceTypeSelect');
+  sel.innerHTML = '<option value="">— Select Service Type —</option>';
+  const opts = (serviceTypes[dept] && serviceTypes[dept][category]) || ['General Inquiry'];
+  opts.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o; opt.textContent = o;
+    sel.appendChild(opt);
+  });
+
+  window.scrollTo(0, 0);
+}
+
+function submitForm() {
+  caseCounter++;
+  const caseNum = 'CS-00' + caseCounter;
+  document.getElementById('confirmedCaseNum').textContent = caseNum;
+  document.getElementById('confirmationBox').classList.add('show');
+  document.getElementById('formCard').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+function showHome() {
+  document.getElementById('homeView').classList.remove('hidden');
+  document.getElementById('formView').classList.remove('active');
+  document.getElementById('requestsView').classList.remove('active');
+  document.getElementById('caseDetailView').classList.remove('active');
+  window.scrollTo(0, 0);
+}
+
+function showRequestsView() {
+  document.getElementById('homeView').classList.add('hidden');
+  document.getElementById('formView').classList.remove('active');
+  document.getElementById('requestsView').classList.add('active');
+  document.getElementById('caseDetailView').classList.remove('active');
+  window.scrollTo(0, 0);
+}
+
+function showCaseDetail(caseId) {
+  document.getElementById('homeView').classList.add('hidden');
+  document.getElementById('formView').classList.remove('active');
+  document.getElementById('requestsView').classList.remove('active');
+  document.getElementById('caseDetailView').classList.add('active');
+  window.scrollTo(0, 0);
+
+  const c = CASES[caseId];
+  if (!c) return;
+
+  document.getElementById('cdBreadcrumb').textContent = caseId;
+
+  const statusOrder = ['submitted', 'assigned', 'in-progress', 'resolved', 'closed'];
+  const statusLabels = { submitted: 'Submitted', assigned: 'Assigned', 'in-progress': 'In Progress', resolved: 'Resolved', closed: 'Closed' };
+  const statusTs = {
+    submitted:    c.submitted,
+    assigned:     c.log.find(e => e.role === 'agent')?.ts || '',
+    'in-progress':c.timelineStatus === 'in-progress' || c.timelineStatus === 'resolved' || c.timelineStatus === 'closed' ? (c.log.filter(e => e.role === 'agent')[1]?.ts || '') : '',
+    resolved:     c.timelineStatus === 'resolved' || c.timelineStatus === 'closed' ? c.lastUpdate : '',
+    closed:       c.timelineStatus === 'closed' ? c.lastUpdate : '',
+  };
+
+  const currentIdx = statusOrder.indexOf(c.timelineStatus);
+
+  const timelineHTML = statusOrder.map((s, i) => {
+    let cls = 'timeline-step';
+    let dot = '';
+    if (i < currentIdx) { cls += ' completed'; dot = '✓'; }
+    else if (i === currentIdx) { cls += ' active'; dot = '●'; }
+    else dot = '';
+    return `<div class="${cls}">
+      <div class="timeline-dot">${dot}</div>
+      <div class="timeline-label">${statusLabels[s]}</div>
+      ${statusTs[s] ? `<div class="timeline-ts">${statusTs[s].split(' · ')[0]}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const deptTagClass = { 'Facilities Services': 'facilities', 'Transportation Services': 'transportation', 'Campus Life Services': 'campus-life' }[c.dept] || 'facilities';
+  const deptTagShort = { 'Facilities Services': 'Facilities', 'Transportation Services': 'Transportation', 'Campus Life Services': 'Campus Life' }[c.dept] || c.dept;
+
+  const logHTML = c.log.map(e => {
+    const avatarClass = e.role === 'agent' ? 'agent' : e.role === 'system' ? 'system' : 'user';
+    const avatarText  = e.role === 'agent' ? e.author.split(' ')[0][0] + (e.author.split(' ')[1]?.[0] || '') : e.role === 'system' ? '⚙' : 'JD';
+    return `<div class="wl-entry">
+      <div class="wl-avatar ${avatarClass}">${avatarText}</div>
+      <div class="wl-body">
+        <div class="wl-header">
+          <span class="wl-author">${e.author}</span>
+          <span class="wl-badge ${e.type}">${e.type.charAt(0).toUpperCase() + e.type.slice(1)}</span>
+          <span class="wl-ts">${e.ts}</span>
+        </div>
+        <div class="wl-text">${e.text}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const canEscalate = (c.status === 'in-progress' || c.status === 'open');
+
+  document.getElementById('caseDetailCard').innerHTML = `
+    <div class="case-detail-header">
+      <div class="case-detail-meta">
+        <div class="case-detail-number">${c.caseNum}</div>
+        <div class="case-detail-subject">${c.subject}</div>
+        <div class="case-detail-pills">
+          <span class="status-badge ${c.status}">${c.statusLabel}</span>
+          <span class="dept-tag ${deptTagClass}">${deptTagShort}</span>
+          <span style="font-size:12px;color:var(--ucsf-muted)">${c.category}</span>
+          ${c.srwo !== '—' ? `<span style="font-size:12px;background:#E6F4F5;color:#127a82;padding:2px 8px;border-radius:3px;font-weight:600">${c.srwo}</span>` : ''}
+        </div>
+      </div>
+      <div class="case-detail-dates">
+        <div><span style="color:var(--ucsf-muted);font-size:11px">Submitted</span><br><strong>${c.submitted}</strong></div>
+        <div style="margin-top:8px"><span style="color:var(--ucsf-muted);font-size:11px">Last Update</span><br><strong>${c.lastUpdate}</strong></div>
+      </div>
+    </div>
+
+    <div class="timeline-wrap">
+      <h3>Status Timeline</h3>
+      <div class="timeline-steps">${timelineHTML}</div>
+    </div>
+
+    <div class="case-detail-section">
+      <div class="case-section-title">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Request Details
+      </div>
+      <div class="detail-grid">
+        <div class="detail-field"><label>Department</label><span>${c.dept}</span></div>
+        <div class="detail-field"><label>Category</label><span>${c.category}</span></div>
+        <div class="detail-field"><label>Service Type</label><span>${c.serviceType}</span></div>
+        <div class="detail-field"><label>Priority</label><span>${c.priority}</span></div>
+        <div class="detail-field"><label>Location</label><span>${c.location}</span></div>
+        <div class="detail-field"><label>Submitted By</label><span>Jamie Doe · jamie.doe@ucsf.edu</span></div>
+        <div class="detail-field full"><label>Description</label><span>${c.description}</span></div>
+      </div>
+    </div>
+
+    <div class="case-detail-section" id="cdLogSection">
+      <div class="case-section-title">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        SR/WO Work Log
+      </div>
+      <div class="work-log" id="cdLog">${logHTML}</div>
+
+      <div class="comment-box" style="margin-top:16px">
+        <textarea id="cdCommentInput" placeholder="Add a comment or question visible to the BOSC team…"></textarea>
+        <button class="btn btn-secondary" onclick="addCaseComment('${c.caseNum}')" style="flex-shrink:0;align-self:flex-end">
+          Post Comment
+        </button>
+      </div>
+    </div>
+
+    <div class="case-detail-section">
+      <div class="case-section-title">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Escalation
+      </div>
+      <div class="escalate-bar">
+        <span class="escalate-note">If your issue is time-sensitive or has not received a response, you can escalate this case to a senior BOSC agent for immediate review.</span>
+        <button class="btn-escalate" id="cdEscalateBtn" onclick="escalateCase('${c.caseNum}')" ${!canEscalate ? 'disabled title="Only open or in-progress cases can be escalated"' : ''}>
+          🚨 Escalate Case
+        </button>
+      </div>
+      <div class="escalate-confirm" id="cdEscalateConfirm">
+        <strong>Escalation request submitted.</strong> A senior BOSC agent will review this case within 2 business hours. You will receive an email confirmation at jamie.doe@ucsf.edu.
+      </div>
+    </div>
+  `;
+}
+
+function addCaseComment(caseId) {
+  const input = document.getElementById('cdCommentInput');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  const now = new Date();
+  const ts  = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' +
+              now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+  const entry = { ts, author: 'Jamie Doe', role: 'user', type: 'comment', text };
+  CASES[caseId].log.push(entry);
+
+  const newEl = document.createElement('div');
+  newEl.className = 'wl-entry';
+  newEl.innerHTML = `
+    <div class="wl-avatar user">JD</div>
+    <div class="wl-body">
+      <div class="wl-header">
+        <span class="wl-author">Jamie Doe</span>
+        <span class="wl-badge comment">Comment</span>
+        <span class="wl-ts">${ts}</span>
+      </div>
+      <div class="wl-text">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>`;
+
+  document.getElementById('cdLog').appendChild(newEl);
+  input.value = '';
+  newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function escalateCase(caseId) {
+  const btn = document.getElementById('cdEscalateBtn');
+  const confirm = document.getElementById('cdEscalateConfirm');
+  btn.disabled = true;
+  confirm.classList.add('show');
+
+  const now = new Date();
+  const ts  = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' +
+              now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+  const entry = { ts, author: 'Jamie Doe', role: 'user', type: 'escalation', text: 'Escalation requested by submitter. BOSC senior agent review triggered.' };
+  CASES[caseId].log.push(entry);
+
+  const newEl = document.createElement('div');
+  newEl.className = 'wl-entry';
+  newEl.innerHTML = `
+    <div class="wl-avatar user">JD</div>
+    <div class="wl-body">
+      <div class="wl-header">
+        <span class="wl-author">Jamie Doe</span>
+        <span class="wl-badge escalation">Escalation</span>
+        <span class="wl-ts">${ts}</span>
+      </div>
+      <div class="wl-text">Escalation requested by submitter. BOSC senior agent review triggered.</div>
+    </div>`;
+  document.getElementById('cdLog').appendChild(newEl);
+  newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function selectPriority(el) {
+  document.querySelectorAll('.priority-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ── Transportation Knowledge Base ──────────────────────────────
+const TRANSPORT_KB = [
+  {
+    cat: 'Parking',
+    articles: [
+      {
+        q: 'Where can I park at Parnassus?',
+        a: `Public parking at Parnassus is available at two locations:<br><br>
+        <strong>Millberry Union Patient &amp; Visitor Garage</strong> — the primary public option. Expect high occupancy between 7–9 AM on weekdays, so arriving early or after 9 AM can save you significant time circling for a spot.<br><br>
+        <strong>Westside Dental Lot</strong> (50 Kirkham St) — a smaller mixed-use lot shared with UCSF employees. Same rates as Millberry Union. Payment via Pay by Phone or the onsite pay station.<br><br>
+        💡 <em>Pro tip: If you're visiting for a clinical appointment, ask your provider's office for a validation sticker — it can substantially reduce your parking cost.</em>`,
+        action: null
+      },
+      {
+        q: 'Where can employees park at Parnassus?',
+        a: `Employee parking at Parnassus is limited and requires <strong>departmental approval</strong> — you can't simply purchase a permit on your own.<br><br>
+        <strong>Step 1:</strong> Request approval from your department's Control Point, Chief Administrative Officer (CAO), or Dean's Office.<br>
+        <strong>Step 2:</strong> Once approved, contact <a href="mailto:Transportation@ucsf.edu">Transportation@ucsf.edu</a> for next steps on setting up Pay by Phone.<br><br>
+        <strong>Approved locations:</strong> ACC Garage or Westside Dental Lot<br>
+        <strong>Daily rate:</strong> $26 | <strong>Monthly:</strong> $332 | <strong>Hourly rate:</strong> Not available for employees<br><br>
+        Your Parnassus permit also works at Mission Bay, Mt. Zion, MCB, Buchanan Dental, and 2001 Embarcadero — so it's the most flexible employee permit available.<br><br>
+        💡 <em>Parnassus permits are scarce. As of June 2025, the Chancellor's cabinet updated policy to prioritize patients, so employee availability has decreased. If your role doesn't require daily Parnassus presence, consider whether a Mission Bay permit plus shuttle access is a better fit.</em>`,
+        action: { label: 'Request a Parking Permit', form: 'parking' }
+      },
+      {
+        q: 'What are the employee daily parking rates?',
+        a: `<strong>Daily rate:</strong> $26/day at every UCSF campus location<br>
+        <strong>Monthly permit:</strong> $332/month — roughly $15.10/workday, a better deal if you park more than 22 days/month<br>
+        <strong>Hourly rate:</strong> Not available — employees pay the full daily rate regardless of how long they stay<br><br>
+        Permits are tied to your license plate and managed via Pay by Phone.<br><br>
+        💡 <em>If you're paying $332/month out of pocket, consider enrolling in Edenred pre-tax commuter benefits. You can pay for your parking permit pre-tax, which effectively reduces the real cost depending on your tax bracket — potentially saving $60–100/month.</em>`,
+        action: null
+      },
+      {
+        q: 'What are the public (visitor/patient) daily parking rates?',
+        a: `Rates vary by campus and whether you have a clinical validation sticker:<br><br>
+        <strong>With a validation sticker from your clinician:</strong> $5/hour up to $36/day at Parnassus–Millberry Union<br>
+        <strong>Without a validation sticker:</strong> Up to $60/day at Parnassus<br>
+        <strong>All other locations:</strong> $5/hour up to $35/day, no validation needed<br><br>
+        ADA permit holders pay a flat $7/day at any UCSF garage — just present your hangtag at the exit.<br><br>
+        💡 <em>If you're a patient or accompanying a patient, always ask the clinic for a validation sticker before leaving the building. Forgetting one means paying nearly double at the Parnassus exit.</em>`,
+        action: null
+      },
+      {
+        q: 'Where can staff park at Mission Bay?',
+        a: `Mission Bay has significantly more employee parking capacity than Parnassus. Your options:<br><br>
+        <strong>Third Street Garage</strong> — the primary structured garage, central to Mission Bay clinical and research buildings<br>
+        <strong>Community Center Garage</strong> — adjacent to the Mission Bay Community Center<br>
+        <strong>Surface lots</strong> — three lots at Nelson Rising Lane and Mission Hall, good for shorter visits<br><br>
+        Monthly permits and daily rates ($26/day) both apply. No departmental approval required for Mission Bay — you can set up directly through Pay by Phone.<br><br>
+        💡 <em>A Mission Bay permit is valid across most UCSF locations — Mission Bay, Mt. Zion, MCB, Buchanan Dental, and 2001 Embarcadero. It is not valid at Parnassus.</em>`,
+        action: { label: 'Request a Parking Permit', form: 'parking' }
+      },
+      {
+        q: 'Is my Mission Bay permit valid at Parnassus?',
+        a: `<strong>No.</strong> Mission Bay permits are not valid at Parnassus — this is a firm policy, not a technicality.<br><br>
+        If you have an occasional or recurring business need to be at Parnassus, you'll need to request a separate Parnassus permit through your CAO or Dean's Office. They'll verify operational need before approving.<br><br>
+        The reverse is not true: <strong>Parnassus permits are valid at Mission Bay</strong> and most other UCSF locations, making them the more flexible (and harder to get) of the two.<br><br>
+        💡 <em>If you only need Parnassus infrequently, the UCSF shuttle system may be a more practical solution — it runs reliably between campuses and avoids the permit hassle entirely.</em>`,
+        action: { label: 'Request a Parnassus Permit', form: 'parking' }
+      },
+      {
+        q: 'How do I appeal a parking citation?',
+        a: `Citations can be appealed online — but you need to act quickly:<br><br>
+        <strong>Portal:</strong> <a href="http://PayMyCite.com" target="_blank">PayMyCite.com</a><br>
+        <strong>Deadline:</strong> Within <strong>21 days</strong> of the issue date — appeals submitted after this window will not be considered<br><br>
+        Your appeal needs to include:<br>
+        • Citation number (on the ticket)<br>
+        • Clear written justification for dismissal<br>
+        • Supporting screenshots or photos (e.g., a faded sign, a broken meter, a valid permit not visible from outside)<br><br>
+        💡 <em>The strongest appeals include documentation. A photo of your vehicle in context — showing the permit, signage, or meter — is far more effective than a written explanation alone. Vague appeals ("I didn't know") are typically denied.</em>`,
+        action: { label: 'Submit a Citation Appeal', form: 'violation' }
+      },
+      {
+        q: 'Can I get a refund for unused parking days?',
+        a: `Refund availability depends on your permit type and location:<br><br>
+        <strong>Monthly permits (most locations):</strong> Refunds can be requested "within reason" for unused days. Email <a href="mailto:Transportation@ucsf.edu">Transportation@ucsf.edu</a> with your permit details and the reason for the refund request.<br><br>
+        <strong>Parnassus permits:</strong> Be very careful here. Any request to refund, pause, or hibernate your Parnassus permit may result in it being <strong>permanently reallocated</strong> to another person in your department. Parnassus permits are scarce — once lost, there's no guarantee you'll get it back.<br><br>
+        💡 <em>If you're going on leave or working remotely for an extended period, contact Transportation before making any changes to a Parnassus permit. Understand the risk before submitting.</em>`,
+        action: { label: 'Contact Transportation Services', form: 'general' }
+      },
+      {
+        q: 'How do I request an ADA parking permit?',
+        a: `The process differs based on your affiliation:<br><br>
+        <strong>UCSF Employees:</strong> Submit your request and required medical documentation to Disability Management Services (DMS) at <a href="mailto:HRDMS@ucsf.edu">HRDMS@ucsf.edu</a>. DMS reviews and forwards approval to Transportation, who issues the parking accommodation.<br><br>
+        <strong>UCSF Students:</strong> Contact Student Disability Services at <a href="mailto:StudentDisability@ucsf.edu">StudentDisability@ucsf.edu</a>. Same review-and-forward process applies.<br><br>
+        <strong>Patients &amp; Visitors:</strong> Park in any marked ADA stall with a valid ADA hangtag. Present it at the exit — you'll be charged the ADA rate of <strong>$7/day</strong>. If no ADA stalls are available, you may use a standard stall and still receive the $7 ADA rate upon exit.<br><br>
+        💡 <em>ADA accommodations at UCSF are handled through HR, not Transportation directly. Starting with Transportation often results in being redirected — go to DMS or SDS first to save time.</em>`,
+        action: { label: 'Request Accessible Parking', form: 'access' }
+      },
+      {
+        q: 'Why is Parnassus parking so difficult?',
+        a: `Parnassus sits in a residential San Francisco neighborhood with very limited garage and surface lot capacity. The campus wasn't built for the volume of employees and patients it now serves.<br><br>
+        In June 2025, the Chancellor's cabinet formalized a policy change that prioritizes <strong>patients and patient-visitors</strong> over employees. This reduced the number of permits available to staff — particularly at ACC Garage.<br><br>
+        The practical result: employee permits are allocated per department, and many departments have waiting lists. Getting a Parnassus permit often depends on turnover within your department, not just submitting a request.<br><br>
+        💡 <em>If you're a regular Parnassus commuter, the UCSF shuttle system, Muni (N-Judah line stops nearby), and the Park and Ride program are worth exploring as alternatives. The shuttle in particular is free, reliable, and avoids the parking scramble entirely.</em>`,
+        action: null
+      },
+      {
+        q: 'Is there a Park and Ride program?',
+        a: `Yes — Park and Ride lets you park at an off-campus lot and shuttle or transit to UCSF, which is often faster and cheaper than driving directly to campus.<br><br>
+        <strong>Park and Ride locations:</strong><br>
+        • Japan Center<br>
+        • Music Concourse (Golden Gate Park area)<br>
+        • 5th and Mission<br>
+        • UCSF Buchanan Dental<br><br>
+        These lots are particularly useful for Parnassus commuters who can't get a campus permit. Parking at these locations can be covered by your Edenred pre-tax benefit card.<br><br>
+        💡 <em>The Music Concourse and Japan Center options connect well to the UCSF shuttle network. Check the shuttle trip planner to confirm which routes serve each location before committing to a spot.</em>`,
+        action: null
+      },
+      {
+        q: 'What happens to parking during Warriors games?',
+        a: `Chase Center is adjacent to the Mission Bay campus, and game days create real parking and transit pressure — especially on weeknight games when it overlaps with the evening commute.<br><br>
+        <strong>What to expect:</strong><br>
+        • Third Street Garage is most impacted — expect reduced availability and possible closures<br>
+        • Shuttle detours may shift your usual stop or add travel time<br>
+        • Standard restrictions and congestion on 3rd Street and surrounding streets<br><br>
+        <strong>How you'll know:</strong> Transportation posts <strong>Flash communications</strong> via email and text approximately 24 hours before the event. If you're subscribed to Transportation alerts, you'll get advance notice.<br><br>
+        💡 <em>On heavy event days, arriving before 4 PM or using an alternate garage (Community Center Garage is typically less impacted) gives you the best chance of a smooth experience.</em>`,
+        action: null
+      },
+    ]
+  },
+  {
+    cat: 'Shuttles',
+    articles: [
+      {
+        q: 'What time does the shuttle run?',
+        a: `UCSF shuttles operate <strong>Monday–Friday</strong>, with most routes starting between <strong>5:00–6:00 AM</strong> and running through approximately <strong>8:00 PM</strong>.<br><br>
+        Hours vary by route — some express routes only run during peak commute windows, while others run all day. Weekend service exists but is significantly reduced.<br><br>
+        The best way to plan a trip is through the <strong>UCSF Mobile App</strong> (Go → Shuttle section) or the UCSF Shuttle Trip Planner on the Transportation website — both show live arrivals, route maps, and real-time GPS positions.<br><br>
+        💡 <em>The UCSF Mobile App is genuinely the best tool here. Real-time GPS tracking means you can see exactly where your shuttle is and whether you have time to grab coffee before the stop — or whether you need to run.</em>`,
+        action: null
+      },
+      {
+        q: 'Do shuttles run on weekends?',
+        a: `Yes, but weekend service is considerably reduced compared to weekdays. Not all routes operate, and frequency is lower — you may wait 30–60 minutes between shuttles on some routes.<br><br>
+        Always check the current schedule before relying on weekend service, as routes can change seasonally or due to campus events. The UCSF Transportation website and Mobile App reflect the most current timetables.<br><br>
+        💡 <em>If you're planning a weekend trip between campuses, building in extra buffer time is wise. For time-sensitive weekend travel, having a backup plan (Muni, BART, or rideshare) is a good habit.</em>`,
+        action: null
+      },
+      {
+        q: 'Are UCSF shuttles ADA accessible?',
+        a: `Yes — all UCSF shuttles are fully ADA-compliant and equipped with <strong>wheelchair lifts</strong>. You don't need to request this in advance for standard boarding.<br><br>
+        If you need additional assistance — including help with loading, specific stop accommodations, or have questions about accessibility at a particular stop — contact Shuttle Dispatch directly:<br><br>
+        <strong>Phone:</strong> (415) 476-GOGO<br>
+        <strong>App:</strong> UCSF Mobile App → Go section<br><br>
+        💡 <em>If you have a recurring accessibility need (e.g., you use a power wheelchair or need a specific boarding location), reaching out to Transportation Services in advance allows them to flag your route and ensure drivers are prepared.</em>`,
+        action: { label: 'Request ADA Transportation Assistance', form: 'access' }
+      },
+      {
+        q: 'Are shuttles tracked in real-time?',
+        a: `Yes. All UCSF shuttles use GPS tracking, and real-time arrival data is publicly accessible — no login required.<br><br>
+        <strong>How to check:</strong><br>
+        • <strong>UCSF Mobile App</strong> → Go section → Live Shuttle tab (most up-to-date)<br>
+        • UCSF Transportation website → Shuttle tracker<br><br>
+        The tracker shows vehicle positions on a map and estimated arrival times at each stop. It updates every 30–60 seconds.<br><br>
+        💡 <em>The app tracker is accurate enough that most regular shuttle riders use it to time exactly when to leave their desk. The "next arrival" time displayed at physical stop signs may lag — the app is generally more reliable.</em>`,
+        action: null
+      },
+      {
+        q: 'Can I bring a bike on the shuttle?',
+        a: `Yes — most UCSF shuttles have <strong>exterior bike racks</strong> that accommodate up to <strong>2 bikes</strong> per shuttle.<br><br>
+        Loading is first-come, first-served. If both rack slots are taken, you'll need to wait for the next shuttle. Bikes must be secured by the rider before boarding.<br><br>
+        💡 <em>During peak commute hours (7–9 AM and 5–7 PM), bike rack slots go quickly on popular routes. If you're bike-commuting regularly, arriving at the stop a few minutes early helps. UCSF also offers secure bike cages at major campuses as a complement — you can ride to campus, lock up securely, and take the shuttle between buildings.</em>`,
+        action: null
+      },
+      {
+        q: 'How do I report a shuttle issue?',
+        a: `For any shuttle issue — missed stop, safety concern, accessibility problem, driver conduct, or vehicle condition — contact Shuttle Dispatch:<br><br>
+        <strong>Phone:</strong> (415) 476-GOGO<br>
+        <strong>App:</strong> UCSF Mobile App<br><br>
+        Dispatch triages your report and routes it to the appropriate team. For urgent or safety-related issues, call directly rather than using the app.<br><br>
+        For non-urgent issues or if you want a written record of your report, submitting through this portal creates a tracked case that you can follow up on.<br><br>
+        💡 <em>When reporting, note the route number, approximate time, and direction of travel if you can. That information helps dispatch locate the specific vehicle and driver quickly.</em>`,
+        action: { label: 'Report a Shuttle Issue', form: 'shuttle' }
+      },
+      {
+        q: 'Can patients ride UCSF shuttles?',
+        a: `Yes — UCSF patients and visitors may ride all UCSF shuttles <strong>free of charge</strong>. No registration, pass, or ID is required.<br><br>
+        Masks may be required on shuttles that serve clinical areas, consistent with UCSF infection control policies. Check current masking guidance at your destination before boarding if you're unsure.<br><br>
+        💡 <em>Patients traveling between Parnassus and Mission Bay clinics — or between any two UCSF campuses — often find the shuttle faster than driving and re-parking, especially during peak hours. Ask your clinic coordinator about which shuttle routes serve your appointment location.</em>`,
+        action: null
+      },
+      {
+        q: 'Where is lost and found for shuttles?',
+        a: `Items left on UCSF shuttles are collected by Shuttle Dispatch. There's no online lookup — you'll need to call to check if your item was turned in.<br><br>
+        <strong>Contact:</strong> Shuttle Dispatch at (415) 476-GOGO<br>
+        <strong>Hours:</strong> During shuttle operating hours (approximately 5 AM–8 PM, Monday–Friday)<br><br>
+        💡 <em>The sooner you call after realizing something is missing, the better. Dispatch can radio the driver on the specific route while the shuttle is still running. Waiting until the next day significantly reduces your chances of recovery, as items may be transferred to a central storage location.</em>`,
+        action: null
+      },
+    ]
+  },
+  {
+    cat: 'Commuter Benefits',
+    articles: [
+      {
+        q: 'Does UCSF offer pre-tax commuter benefits?',
+        a: `Yes — through <strong>Edenred</strong>, UCSF's pre-tax commuter benefit program lets you pay for eligible transit and parking expenses using pre-tax income. This reduces your taxable wages, which means you're effectively paying less for your commute.<br><br>
+        <strong>How it works:</strong> You elect an amount to deduct from your paycheck before taxes. Those funds load onto a restricted Edenred debit card, usable only for eligible commute expenses.<br><br>
+        <strong>Program fee:</strong> $3/month in any month you have an active order — small enough that virtually any regular commuter comes out ahead.<br><br>
+        💡 <em>This is one of the most underused employee benefits at UCSF. If you're paying $332/month for a parking permit and you're in a 25% combined tax bracket, pre-tax enrollment saves you roughly $83/month — or about $1,000/year — with almost no effort to set up.</em>`,
+        action: null
+      },
+      {
+        q: 'What can I spend Edenred commuter benefits on?',
+        a: `<strong>✅ Eligible — Parking:</strong><br>
+        UCSF parking permits, Park &amp; Ride permits, ZSFG permits, and many parking facilities near UCSF campuses<br><br>
+        <strong>✅ Eligible — Transit:</strong><br>
+        Clipper cards, Muni, BART, Caltrain, Amtrak, ferries, vanpools, and employer-sponsored shuttle services (including the UCSF Uber Shuttle)<br><br>
+        <strong>❌ Not eligible:</strong><br>
+        Gas, highway tolls, standard Uber or Lyft rides (non-employer shuttle)<br><br>
+        💡 <em>The Clipper card is one of the most flexible uses — you can load it with Edenred funds and use it across Muni, BART, Caltrain, and ferries. If your commute involves multiple transit systems, a Clipper pre-load can cover all of it with one card.</em>`,
+        action: null
+      },
+      {
+        q: 'What are the monthly Edenred contribution limits?',
+        a: `For 2026, the IRS allows:<br><br>
+        <strong>Transit:</strong> Up to <strong>$340/month</strong><br>
+        <strong>Parking:</strong> Up to <strong>$340/month</strong><br><br>
+        These are separate limits — you can elect up to $340 for each simultaneously, for a combined pre-tax maximum of <strong>$680/month</strong>.<br><br>
+        Unused balances roll over as <strong>Flex Funds</strong>, so there's no pressure to spend everything in a given month.<br><br>
+        💡 <em>Most UCSF employees elect only what they need (e.g., $332 for a monthly parking permit), which keeps it clean and predictable. If your commute costs vary month to month, Flex Funds let the balance accumulate and cover heavier-use months without re-enrolling.</em>`,
+        action: null
+      },
+      {
+        q: 'When will my Edenred funds be available?',
+        a: `Edenred follows a <strong>two-month cycle</strong> — plan accordingly:<br><br>
+        <strong>Order deadline:</strong> 23rd of each month<br>
+        <strong>Payroll deduction:</strong> Following month's paycheck<br>
+        <strong>Funds available:</strong> First of the month after deduction<br><br>
+        <strong>Example:</strong> Order placed by July 23 → deducted from August paycheck → available September 1<br><br>
+        The same cycle applies to changes in your deduction amount — update by the 23rd for it to take effect two months out.<br><br>
+        💡 <em>New to Edenred? The two-month delay catches a lot of people off guard. If you're starting a new permit in October, set up Edenred in August so funds are ready when you need them. The $3 fee only applies in months with an active order, so there's no cost to setting it up early.</em>`,
+        action: null
+      },
+      {
+        q: 'Does UCSF support vanpools?',
+        a: `Yes — in partnership with <strong>Commute with Enterprise</strong>. Vanpools are one of the most cost-effective commuting options for employees who live in the North Bay, South Bay, or East Bay.<br><br>
+        <strong>Requirements:</strong> Minimum 4 riders; participants are encouraged to drive at least once per week<br><br>
+        <strong>What UCSF covers:</strong> 25% subsidy per vanpool + free reserved parking at UCSF garages<br>
+        <strong>What MTC covers:</strong> Additional $600 subsidy. County-specific subsidies available in Contra Costa, Marin, San Mateo, Santa Clara, and Solano.<br><br>
+        <strong>Average cost to participants: ~$155/person/month</strong> — this includes the vehicle, insurance, maintenance, fuel, tolls, AND parking. Compare that to $332/month for a parking permit alone, and the savings are significant.<br><br>
+        💡 <em>If you live in the suburbs and are paying $332 for parking plus $150–300 in gas and tolls, vanpooling could save you $300–500/month. Vanpool funds are also eligible for Edenred pre-tax benefits, stacking the savings further.</em>`,
+        action: { label: 'Ask About Vanpool Options', form: 'rideshare' }
+      },
+      {
+        q: 'What is the UCSF Uber Shuttle?',
+        a: `UCSF has partnered with Uber to provide <strong>reserved seats on Uber's commuter shuttle buses</strong> for UCSF employees — this is not the standard Uber ride-hailing service.<br><br>
+        <strong>Currently available for:</strong> Mission Bay commuters from the North Bay, South Bay, and East Bay<br>
+        <strong>Expansion planned:</strong> Parnassus service is under consideration but not yet active<br><br>
+        The Uber Shuttle is eligible for Edenred pre-tax commuter benefits (as an employer-sponsored shuttle service), which reduces your out-of-pocket cost.<br><br>
+        For enrollment and route details, visit the program page through Campus Life Services Transportation.<br><br>
+        💡 <em>This program is particularly useful for employees commuting from the East Bay who find BART-to-shuttle connections unreliable during peak hours. A dedicated commuter shuttle is often faster and more predictable.</em>`,
+        action: null
+      },
+      {
+        q: 'How do I set up my Edenred account?',
+        a: `Access to the Edenred portal typically becomes available <strong>2–6 weeks after your UCSF hire date</strong>. You'll receive instructions from HR or through the UCSF onboarding process.<br><br>
+        <strong>Once active, you can:</strong><br>
+        • Set your monthly transit and/or parking deduction amount<br>
+        • View your card balance and transaction history<br>
+        • Update elections (changes take effect after the 23rd of the month)<br><br>
+        If you're past the 2–6 week window and haven't received access, or if you're a long-tenured employee who's never enrolled, reach out to Transportation Services for guidance.<br><br>
+        💡 <em>Don't wait until you "need" it to set it up. The two-month funding cycle means early setup prevents gaps in coverage. If your permit renews January 1, enroll in November.</em>`,
+        action: { label: 'Contact Transportation Services', form: 'rideshare' }
+      },
+      {
+        q: 'What happens to my Edenred funds if I leave UCSF?',
+        a: `<strong>Unused pre-tax commuter funds are forfeited upon separation</strong> from UCSF and returned to the University. These funds cannot be refunded to you as cash.<br><br>
+        This is an IRS requirement for pre-tax commuter programs — the funds are earmarked for commute expenses only, and once your employment ends, you're no longer incurring eligible expenses.<br><br>
+        💡 <em>If you know you're leaving UCSF, wind down your Edenred elections before your last day. Reduce or cancel your future-month elections to minimize the balance at the time of separation. Remember the two-month cycle — changes need to be made well in advance to take effect before your last paycheck.</em>`,
+        action: null
+      },
+    ]
+  },
+  {
+    cat: 'Bikes & Programs',
+    articles: [
+      {
+        q: 'Does UCSF provide secure bike storage?',
+        a: `Yes — UCSF operates <strong>secure, badge-access bike cages</strong> at all major campuses:<br><br>
+        • Parnassus Heights<br>
+        • Mt. Zion<br>
+        • Mission Bay<br>
+        • ZSFGH Priede Hall<br><br>
+        A <strong>no-cost bike permit</strong> is required for badge access. You can apply through the biking page on the UCSF Transportation website — approval is typically straightforward.<br><br>
+        Standard bike racks (outdoor, unsecured) are also available at most UCSF buildings for shorter visits.<br><br>
+        💡 <em>Bike cages are genuinely one of the best-kept secrets in UCSF commuter benefits. Free, secure, covered storage — especially valuable for higher-end bikes. If you're biking to campus even occasionally, getting the permit is worth the 5-minute application.</em>`,
+        action: { label: 'Request Bike Program Access', form: 'bike' }
+      },
+      {
+        q: 'Is there a Park and Ride program?',
+        a: `Yes — Park and Ride lets you drive part of your commute and connect to the UCSF shuttle or transit for the last leg. It's especially useful for Parnassus commuters who can't get a campus permit.<br><br>
+        <strong>Locations:</strong><br>
+        • Japan Center (Western Addition — close Muni/shuttle access)<br>
+        • Music Concourse (Golden Gate Park — near Parnassus shuttle stops)<br>
+        • 5th and Mission (Downtown SF — central BART/Muni connection)<br>
+        • UCSF Buchanan Dental<br><br>
+        Parking at these locations is eligible for Edenred pre-tax benefits.<br><br>
+        💡 <em>Music Concourse is a popular choice for Parnassus employees — it's a short shuttle ride from campus, parking is less expensive than on-campus, and the surrounding area is significantly less congested than Parnassus itself. Many employees find it less stressful than the morning ACC Garage scramble.</em>`,
+        action: null
+      },
+      {
+        q: 'How are transportation changes communicated?',
+        a: `UCSF Transportation uses a tiered communication system based on urgency:<br><br>
+        <strong>Flash Communications (urgent):</strong> Email and/or text alerts for immediate action items — shuttle detours, garage closures, emergency road conditions. Sent as close to real-time as possible.<br><br>
+        <strong>Transportation Digest (routine):</strong> A regular newsletter covering policy updates, program changes, event impacts, and operational news. Less frequent, more informational.<br><br>
+        <strong>UCSF Mobile App:</strong> Real-time shuttle tracking and service alerts — the best tool for day-of travel decisions.<br><br>
+        💡 <em>If you commute regularly, subscribing to Flash communications is worthwhile — even one heads-up about a Warriors game congestion alert can save you significant frustration. You can opt in through the Transportation website.</em>`,
+        action: null
+      },
+      {
+        q: 'Does UCSF support carpools?',
+        a: `Yes — UCSF offers <strong>discounted parking permits</strong> for employees who carpool. If you and a colleague both commute from a similar area, a carpool permit may be one of the most straightforward ways to cut commuting costs.<br><br>
+        Carpool details, eligibility, and the signup process are available on the Transportation carpool webpage.<br><br>
+        💡 <em>Carpooling pairs particularly well with Edenred pre-tax benefits — you can use Edenred to cover your share of a carpool parking permit, reducing your effective cost further. Even splitting a $332 monthly permit with one other person drops the per-person cost to $166 before the pre-tax benefit kicks in.</em>`,
+        action: { label: 'Ask About Carpool Options', form: 'rideshare' }
+      },
+      {
+        q: 'How do I contact Transportation Services?',
+        a: `<strong>Email:</strong> <a href="mailto:Transportation@ucsf.edu">Transportation@ucsf.edu</a> — best for permit requests, refunds, or anything that benefits from a written record<br><br>
+        <strong>Phone / Shuttle Dispatch:</strong> (415) 476-GOGO — best for urgent shuttle issues, lost and found, or real-time questions<br><br>
+        <strong>Business hours:</strong> Monday–Friday, 8:00 AM–5:00 PM (excluding UCSF holidays)<br><br>
+        After hours, the UCSF Mobile App and Transportation website are your best resources for self-service information.<br><br>
+        💡 <em>For anything involving a permit change, citation, or refund — email is strongly preferred over a phone call. It creates a paper trail, gives the team time to research your specific situation, and typically results in a more accurate response than a front-line call center agent can provide in the moment.</em>`,
+        action: { label: 'Submit a General Transportation Inquiry', form: 'general' }
+      },
+    ]
+  }
+];
+
+const PREVIEW_COUNT = 3;
+let kbActiveFilter = 'All';
+let kbExpanded = false;
+
+function initKB() {
+  const filterWrap = document.getElementById('kbFilters');
+  if (!filterWrap) return;
+  kbExpanded = false;
+  const cats = ['All', ...TRANSPORT_KB.map(c => c.cat)];
+  filterWrap.innerHTML = cats.map(c =>
+    `<span class="kb-filter-pill ${c === 'All' ? 'active' : ''}" onclick="setKBFilter('${c}')">${c}</span>`
+  ).join('');
+  renderKB();
+}
+
+function setKBFilter(cat) {
+  kbActiveFilter = cat;
+  kbExpanded = false;
+  document.querySelectorAll('.kb-filter-pill').forEach(p => {
+    p.classList.toggle('active', p.textContent === cat);
+  });
+  renderKB();
+}
+
+function expandKB() {
+  kbExpanded = true;
+  renderKB();
+}
+
+function renderKB() {
+  const query = (document.getElementById('kbSearch')?.value || '').toLowerCase().trim();
+  const resultsEl = document.getElementById('kbResults');
+  const countEl   = document.getElementById('kbCount');
+  if (!resultsEl) return;
+
+  let matches = [];
+  TRANSPORT_KB.forEach(cat => {
+    if (kbActiveFilter !== 'All' && cat.cat !== kbActiveFilter) return;
+    cat.articles.forEach(a => {
+      if (!query || a.q.toLowerCase().includes(query) || a.a.toLowerCase().includes(query)) {
+        matches.push({ ...a, cat: cat.cat });
+      }
+    });
+  });
+
+  const isSearching = query.length > 0;
+  const showAll = kbExpanded || isSearching;
+  const visible = showAll ? matches : matches.slice(0, PREVIEW_COUNT);
+  const hidden  = matches.length - visible.length;
+
+  countEl.textContent = isSearching
+    ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${query}"`
+    : kbActiveFilter !== 'All'
+      ? `${matches.length} article${matches.length !== 1 ? 's' : ''} in ${kbActiveFilter}`
+      : `${matches.length} articles across all categories`;
+
+  if (!matches.length) {
+    resultsEl.innerHTML = `<div class="kb-empty"><div>🔍</div>No results for "<strong>${query}</strong>" — try different keywords or <a href="javascript:void(0)" onclick="openForm('transportation','general','❓ General Inquiry','Transportation Services')" style="color:#7B5CE5">submit a general inquiry</a>.</div>`;
+    return;
+  }
+
+  const articleHTML = visible.map((a, i) => `
+    <div class="kb-article">
+      <div class="kb-article-q" onclick="toggleKB(${i})" id="kbq-${i}">
+        <span style="flex:1">${a.q}</span>
+        <span class="kb-cat-tag">${a.cat}</span>
+        <svg class="kb-chevron" id="kbc-${i}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="kb-article-a" id="kba-${i}">
+        ${a.a}
+        ${a.action ? `<br><a class="kb-article-action" onclick="openForm('transportation','${a.action.form}','','Transportation Services')">→ ${a.action.label}</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  const expandBtn = !showAll && hidden > 0 ? `
+    <div style="text-align:center; margin-top:12px;">
+      <button onclick="expandKB()" style="
+        background:#fff; border:1px solid #7B5CE5; color:#7B5CE5;
+        border-radius:20px; padding:7px 20px; font-size:13px; font-weight:600;
+        cursor:pointer; font-family:inherit; transition:all .12s;
+        display:inline-flex; align-items:center; gap:6px;
+      " onmouseover="this.style.background='#7B5CE5';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#7B5CE5'">
+        ↓ Show all ${matches.length} articles
+      </button>
+    </div>` : '';
+
+  const collapseBtn = showAll && !isSearching && matches.length > PREVIEW_COUNT ? `
+    <div style="text-align:center; margin-top:12px;">
+      <button onclick="kbExpanded=false;renderKB()" style="
+        background:transparent; border:none; color:var(--ucsf-muted);
+        font-size:12px; cursor:pointer; font-family:inherit;
+        display:inline-flex; align-items:center; gap:4px;
+      ">↑ Show less</button>
+    </div>` : '';
+
+  resultsEl.innerHTML = articleHTML + expandBtn + collapseBtn;
+}
+
+function toggleKB(i) {
+  const q = document.getElementById(`kbq-${i}`);
+  const a = document.getElementById(`kba-${i}`);
+  const c = document.getElementById(`kbc-${i}`);
+  const isOpen = a.classList.contains('open');
+  document.querySelectorAll('.kb-article-a').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.kb-article-q').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.kb-chevron').forEach(el => el.classList.remove('open'));
+  if (!isOpen) { a.classList.add('open'); q.classList.add('open'); c.classList.add('open'); }
+}
+</script>
+
+<!-- ── Agentforce Chat Widget ───────────────────────────────────── -->
+<button class="chat-bubble" id="chatBubble" onclick="toggleChat()" aria-label="Open chat assistant">
+  <span class="chat-bubble-tooltip">Chat with UCSF Assistant</span>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
+
+<div class="chat-panel" id="chatPanel" role="dialog" aria-label="UCSF Virtual Assistant">
+  <div class="chat-header">
+    <div class="chat-header-avatar">🤖</div>
+    <div class="chat-header-info">
+      <div class="chat-header-title">UCSF Virtual Assistant</div>
+      <div class="chat-header-badge">⚡ Agentforce · Transportation</div>
+    </div>
+    <button class="chat-close-btn" onclick="toggleChat()" aria-label="Close chat">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <!-- messages injected by JS -->
+    <div class="chat-typing" id="chatTyping">
+      <div class="chat-msg-avatar" style="background:#F3EEFE;font-size:15px;">🤖</div>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <div class="chat-input-bar">
+    <textarea
+      id="chatInput"
+      class="chat-input"
+      placeholder="Ask about parking, shuttles, commuter benefits…"
+      rows="1"
+      onkeydown="handleChatKey(event)"
+      oninput="autoResizeChatInput(this)"
+    ></textarea>
+    <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()" aria-label="Send message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ── Chat Widget ──────────────────────────────────────────────────
+let chatIsOpen = false;
+let chatConversation = []; // {role, content} array sent to API
+let chatWaiting = false;
+
+const WELCOME_MSG = `Hi Jamie! 👋 I'm the UCSF virtual assistant — powered by Agentforce.\n\nI'll be able to answer questions about parking, shuttles, commuter benefits, and campus services, and help route you to the right request form.\n\n⚠️ <em>Live AI responses are coming soon. In the meantime, browse the Transportation Knowledge Base below or use the Helpful Links in the sidebar.</em>`;
+
+function toggleChat() {
+  chatIsOpen = !chatIsOpen;
+  const panel = document.getElementById('chatPanel');
+  panel.classList.toggle('open', chatIsOpen);
+  if (chatIsOpen && chatConversation.length === 0) {
+    setTimeout(openChatWelcome, 120);
+  }
+  if (chatIsOpen) {
+    setTimeout(() => document.getElementById('chatInput').focus(), 250);
+  }
+}
+
+function openChatWelcome() {
+  showTypingIndicator();
+  setTimeout(() => {
+    hideTypingIndicator();
+    appendChatMessage('assistant', WELCOME_MSG);
+  }, 900);
+}
+
+function appendChatMessage(role, text, action) {
+  const messagesEl = document.getElementById('chatMessages');
+  const typingEl   = document.getElementById('chatTyping');
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'chat-msg ' + role;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'chat-msg-avatar';
+  avatar.textContent = role === 'assistant' ? '🤖' : 'JD';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-msg-bubble';
+  bubble.innerHTML = text.replace(/\n/g, '<br>');
+
+  if (action) {
+    const btn = document.createElement('button');
+    btn.className = 'chat-form-btn';
+    btn.innerHTML = '→ ' + escapeHtml(action.label);
+    btn.onclick = () => {
+      toggleChat();
+      openForm(action.dept, action.category, action.label, action.deptName);
+    };
+    bubble.appendChild(document.createElement('br'));
+    bubble.appendChild(btn);
+  }
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(bubble);
+
+  messagesEl.insertBefore(wrapper, typingEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function showTypingIndicator() {
+  const typing = document.getElementById('chatTyping');
+  typing.classList.add('visible');
+  const msgs = document.getElementById('chatMessages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTypingIndicator() {
+  document.getElementById('chatTyping').classList.remove('visible');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function parseAction(text) {
+  const match = text.match(/ACTION:(\{[^\n]+\})/);
+  if (!match) return { clean: text, action: null };
+  try {
+    const action = JSON.parse(match[1]);
+    const clean = text.replace(/\nACTION:\{[^\n]+\}/, '').replace(/ACTION:\{[^\n]+\}/, '').trim();
+    return { clean, action };
+  } catch {
+    return { clean: text, action: null };
+  }
+}
+
+async function sendChatMessage() {
+  if (chatWaiting) return;
+  const input = document.getElementById('chatInput');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  autoResizeChatInput(input);
+  appendChatMessage('user', escapeHtml(text));
+
+  chatWaiting = true;
+  document.getElementById('chatSendBtn').disabled = true;
+  showTypingIndicator();
+
+  // Preview mode — AI responses not yet enabled
+  setTimeout(() => {
+    hideTypingIndicator();
+    appendChatMessage('assistant', 'Thanks for your message! 🚧 Live AI responses are coming soon.\n\nFor now, try the <strong>Transportation Knowledge Base</strong> on the Transportation tab — it covers parking, shuttles, commuter benefits, and more. You can also <strong>submit a request</strong> directly from the home page.');
+    chatWaiting = false;
+    document.getElementById('chatSendBtn').disabled = false;
+    document.getElementById('chatInput').focus();
+  }, 1000);
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+}
+
+function autoResizeChatInput(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+}
+</script>
+</body>
+</html>

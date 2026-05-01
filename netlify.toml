@@ -1,0 +1,19 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Required for Anthropic API proxy function
+[functions]
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+
+# Redirect all paths to index.html (single page app)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
